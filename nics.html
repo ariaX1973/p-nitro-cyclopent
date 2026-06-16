@@ -1,0 +1,4921 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NICS panels — p-nitrobenzène + cyclopentadiène</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#FAFAF7; --surface:#FFFFFF; --text:#1A1A1A; --muted:#6B6B6B; --border:#E2E0DA;
+  --accent:#534AB7;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#14141A; --surface:#1E1E26; --text:#ECEAE3; --muted:#9A9892; --border:#2E2E38; --accent:#AFA9EC; }
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; background:var(--bg); color:var(--text); }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; font-size:14px; line-height:1.5;
+       max-width:1280px; margin:0 auto; padding:1.25rem; }
+.nav { display:flex; gap:0.8rem; align-items:center; font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem; flex-wrap:wrap; }
+.nav a { color:var(--accent); text-decoration:none; }
+.nav a:hover { text-decoration:underline; }
+header h1 { font-size:1.35rem; font-weight:600; letter-spacing:-0.01em; margin:0 0 0.5rem; }
+.lede { color:var(--muted); font-size:0.92rem; margin:0 0 1.1rem; }
+.lede code { background:var(--border); padding:1px 4px; border-radius:3px; font-size:0.85em; }
+
+.toolbar { display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;
+           padding:0.9rem; background:var(--surface); border:1px solid var(--border); border-radius:8px; }
+.row { display:flex; flex-wrap:wrap; align-items:center; gap:0.4rem; }
+.row .label { color:var(--muted); font-size:0.72rem; margin-right:0.5rem; min-width:80px;
+              text-transform:uppercase; letter-spacing:0.05em; font-weight:600; }
+.chip, .btn-action {
+  border:1px solid var(--border); background:transparent; color:var(--text);
+  padding:3px 9px; border-radius:14px; cursor:pointer; font-size:0.82rem;
+  display:inline-flex; align-items:center; gap:5px; user-select:none; font-family:inherit;
+}
+.chip:hover, .btn-action:hover { background:var(--border); }
+.chip[aria-pressed="true"] { border-width:2px; padding:2px 8px; font-weight:500; }
+.btn-action { color:var(--muted); }
+.swatch { width:10px; height:10px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.stroke-mini { width:18px; height:0; border-top:2px solid currentColor; display:inline-block; }
+
+.panels-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1rem; }
+.row-title { font-size:0.85rem; font-weight:600; color:var(--text); margin:0.5rem 0 0.4rem; padding-left:0.4rem;
+             border-left:4px solid var(--accent); }
+.row-title.bq1 { border-left-color:#0F6E56; }
+.row-title.bq2 { border-left-color:#534AB7; }
+@media (prefers-color-scheme: dark) {
+  .row-title.bq1 { border-left-color:#5DCAA5; }
+  .row-title.bq2 { border-left-color:#AFA9EC; }
+}
+.row-title .small { font-weight:400; color:var(--muted); font-size:0.75em; margin-left:0.4rem; }
+.panels-row { display:grid; grid-template-columns:repeat(3, 1fr); gap:0.8rem; margin-bottom:0.8rem; }
+@media (max-width:900px) { .panels-row { grid-template-columns:repeat(2, 1fr); } }
+@media (max-width:600px) { .panels-row { grid-template-columns:1fr; } }
+.panel { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:0.5rem 0.5rem 0.3rem; display:flex; flex-direction:column; }
+.panel-title { font-size:0.8rem; font-weight:600; color:var(--text); margin:0 0 0.2rem; }
+.panel-title .subtitle { color:var(--muted); font-weight:400; font-size:0.7rem; margin-left:0.4rem; }
+.panel-canvas-wrap { position:relative; height:200px; }
+.panel-stats { display:flex; gap:0.7rem; font-size:0.7rem; color:var(--muted); margin-top:0.2rem; font-variant-numeric:tabular-nums; }
+.panel-stats .endo { color:#185FA5; } .panel-stats .exo { color:#993C1D; }
+@media (prefers-color-scheme: dark) {
+  .panel-stats .endo { color:#85B7EB; } .panel-stats .exo { color:#F0997B; }
+}
+
+.legend-row { margin-top:0.8rem; padding-top:0.6rem; border-top:1px solid var(--border); display:flex; flex-wrap:wrap; gap:0.8rem 1.2rem; font-size:0.76rem; color:var(--muted); }
+.legend-row .legend-section { display:flex; flex-direction:column; gap:3px; }
+.legend-row .heading { color:var(--text); font-weight:600; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em; }
+.legend-row .legend-item { display:inline-flex; align-items:center; gap:5px; margin-right:0.5rem; }
+
+footer { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border); }
+.methods-note { font-size:0.78rem; color:var(--muted); margin:0; }
+.methods-note strong { color:var(--text); }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html">← Sommaire</a><span>·</span>
+  <a href="pes.html">PES</a><span>·</span>
+  <a href="heatmap.html">Heatmap</a><span>·</span>
+  <a href="descriptors.html">Descripteurs</a><span>·</span>
+  <a href="panels.html">Panels</a><span>·</span>
+  <span><strong style="color:var(--text)">NICS</strong></span>
+</nav>
+
+<header>
+  <h1>NICS panels — sondes Bq1 (Cyclopent) et Bq2 (NitroBenzène)</h1>
+  <p class="lede">
+    Indices NICS (<em>Nucleus-Independent Chemical Shift</em>) calculés au niveau <code>ωB97X-D/def2SVP</code> via une charge fantôme
+    <strong>Bq</strong> placée à 1.7 Å au-dessus du plan moyen du cycle. <strong>Bq1</strong> = cyclopentadiène (cycle qui s'aromatise progressivement) ;
+    <strong>Bq2</strong> = nitrobenzène (cycle qui perd son aromaticité). NICS plus négatif = courants de cycle aromatiques plus forts.
+  </p>
+</header>
+
+<section class="toolbar" aria-label="Contrôles">
+  <div class="row" id="stereo-row"><span class="label">Stéréochimie</span></div>
+  <div class="row" id="action-row">
+    <span class="label">Options</span>
+    <button class="btn-action" id="btn-default">Vue par défaut</button>
+    <button class="chip" id="btn-download">⬇ PNG</button>
+  </div>
+</section>
+
+<div class="panels-card">
+  <div class="row-title bq1">Bq1 — Cyclopent (5)<span class="small">indices atomiques [1, 2, 3, 4, 8] · cycle qui s'aromatise</span></div>
+  <div class="panels-row" id="row-bq1"></div>
+  <div class="row-title bq2">Bq2 — NitroBenzène (6)<span class="small">indices atomiques [10, 11, 12, 13, 14, 15] · cycle qui perd son aromaticité</span></div>
+  <div class="panels-row" id="row-bq2"></div>
+  <div class="legend-row" id="legend"></div>
+</div>
+
+<footer>
+  <p class="methods-note">
+    <strong>Methods.</strong> NICS via charge fantôme <strong>Bq</strong> (ghost atom basis function) placée à 1.7 Å au-dessus du centre géométrique du cycle.
+    Calcul ωB97X-D/def2SVP en GIAO (Gauge-Independent Atomic Orbital). <strong>NICS<sub>iso</sub></strong> = trace moyenne du tenseur d'écrantage isotrope ;
+    <strong>NICS<sub>zz</sub> global</strong> = composante z dans le système d'axes global ; <strong>NICS<sub>zz</sub> local</strong> = composante z après réorientation
+    selon le plan moyen du cycle (référence pour les cycles non-planaires durant la réaction). Pour Bq1 (cyclopent) : pic d'aromaticité <strong>au TS</strong>
+    (NICS<sub>zz</sub> loc. min). Pour Bq2 (nitrobenzène) : décroissance monotone (perte d'aromaticité par cycloaddition).
+  </p>
+</footer>
+
+<script>
+(() => {
+'use strict';
+
+const mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+const c = (o) => o[mode];
+
+const stereoColor = {
+  endo: { light:'#185FA5', dark:'#85B7EB' },
+  exo:  { light:'#993C1D', dark:'#F0997B' },
+};
+const tsColor = { fill:'#D85A30', border:'#993C1D' };
+
+const DATA = {
+  "endo": {
+    "pes_irc": [
+      {
+        "x": -5.66307,
+        "y": 0.0
+      },
+      {
+        "x": -5.36506,
+        "y": 0.7615643230398526
+      },
+      {
+        "x": -5.06697,
+        "y": 1.621505816333398
+      },
+      {
+        "x": -4.76893,
+        "y": 2.5859138318392376
+      },
+      {
+        "x": -4.47116,
+        "y": 3.6679629309652366
+      },
+      {
+        "x": -4.17314,
+        "y": 4.875234055753066
+      },
+      {
+        "x": -3.8751,
+        "y": 6.209358103199922
+      },
+      {
+        "x": -3.57701,
+        "y": 7.680948768594509
+      },
+      {
+        "x": -3.27891,
+        "y": 9.301977050131816
+      },
+      {
+        "x": -2.98082,
+        "y": 11.067537706406803
+      },
+      {
+        "x": -2.68274,
+        "y": 12.975749463865029
+      },
+      {
+        "x": -2.38466,
+        "y": 15.03020355927178
+      },
+      {
+        "x": -2.08659,
+        "y": 17.207917458135096
+      },
+      {
+        "x": -1.78851,
+        "y": 19.466070541436014
+      },
+      {
+        "x": -1.49043,
+        "y": 21.74497410802109
+      },
+      {
+        "x": -1.19236,
+        "y": 23.943091477460886
+      },
+      {
+        "x": -0.89428,
+        "y": 25.92009082345917
+      },
+      {
+        "x": -0.5962,
+        "y": 27.522079840071523
+      },
+      {
+        "x": -0.29815,
+        "y": 28.589324735726798
+      },
+      {
+        "x": 0.0,
+        "y": 28.97364856068143
+      },
+      {
+        "x": 0.29816,
+        "y": 28.565792502970336
+      },
+      {
+        "x": 0.59623,
+        "y": 27.34067249876815
+      },
+      {
+        "x": 0.89432,
+        "y": 25.355119571127894
+      },
+      {
+        "x": 1.1924,
+        "y": 22.72765519942544
+      },
+      {
+        "x": 1.49048,
+        "y": 19.61468361014631
+      },
+      {
+        "x": 1.78855,
+        "y": 16.189073623234044
+      },
+      {
+        "x": 2.0866,
+        "y": 12.62275655940481
+      },
+      {
+        "x": 2.38462,
+        "y": 9.080461185753384
+      },
+      {
+        "x": 2.68262,
+        "y": 5.718926191202199
+      },
+      {
+        "x": 2.98058,
+        "y": 2.693543629315638
+      },
+      {
+        "x": 3.27842,
+        "y": 0.16241513966197885
+      },
+      {
+        "x": 3.57586,
+        "y": -1.7245642072674772
+      }
+    ],
+    "extrap_left": [
+      {
+        "x": -6.66307,
+        "y": 0.0
+      },
+      {
+        "x": -5.66307,
+        "y": 0.0
+      }
+    ],
+    "extrap_right": [
+      {
+        "x": 3.57586,
+        "y": -1.7245642072674772
+      },
+      {
+        "x": 4.5758600000000005,
+        "y": -1.7245642072674772
+      }
+    ],
+    "pes_irc_abs": [
+      {
+        "x": -5.66307,
+        "y": 0.0
+      },
+      {
+        "x": -5.36506,
+        "y": 0.7615643230398526
+      },
+      {
+        "x": -5.06697,
+        "y": 1.621505816333398
+      },
+      {
+        "x": -4.76893,
+        "y": 2.5859138318392376
+      },
+      {
+        "x": -4.47116,
+        "y": 3.6679629309652366
+      },
+      {
+        "x": -4.17314,
+        "y": 4.875234055753066
+      },
+      {
+        "x": -3.8751,
+        "y": 6.209358103199922
+      },
+      {
+        "x": -3.57701,
+        "y": 7.680948768594509
+      },
+      {
+        "x": -3.27891,
+        "y": 9.301977050131816
+      },
+      {
+        "x": -2.98082,
+        "y": 11.067537706406803
+      },
+      {
+        "x": -2.68274,
+        "y": 12.975749463865029
+      },
+      {
+        "x": -2.38466,
+        "y": 15.03020355927178
+      },
+      {
+        "x": -2.08659,
+        "y": 17.207917458135096
+      },
+      {
+        "x": -1.78851,
+        "y": 19.466070541436014
+      },
+      {
+        "x": -1.49043,
+        "y": 21.74497410802109
+      },
+      {
+        "x": -1.19236,
+        "y": 23.943091477460886
+      },
+      {
+        "x": -0.89428,
+        "y": 25.92009082345917
+      },
+      {
+        "x": -0.5962,
+        "y": 27.522079840071523
+      },
+      {
+        "x": -0.29815,
+        "y": 28.589324735726798
+      },
+      {
+        "x": 0.0,
+        "y": 28.97364856068143
+      },
+      {
+        "x": 0.29816,
+        "y": 28.565792502970336
+      },
+      {
+        "x": 0.59623,
+        "y": 27.34067249876815
+      },
+      {
+        "x": 0.89432,
+        "y": 25.355119571127894
+      },
+      {
+        "x": 1.1924,
+        "y": 22.72765519942544
+      },
+      {
+        "x": 1.49048,
+        "y": 19.61468361014631
+      },
+      {
+        "x": 1.78855,
+        "y": 16.189073623234044
+      },
+      {
+        "x": 2.0866,
+        "y": 12.62275655940481
+      },
+      {
+        "x": 2.38462,
+        "y": 9.080461185753384
+      },
+      {
+        "x": 2.68262,
+        "y": 5.718926191202199
+      },
+      {
+        "x": 2.98058,
+        "y": 2.693543629315638
+      },
+      {
+        "x": 3.27842,
+        "y": 0.16241513966197885
+      },
+      {
+        "x": 3.57586,
+        "y": -1.7245642072674772
+      }
+    ],
+    "extrap_left_abs": [
+      {
+        "x": -6.66307,
+        "y": 0.0
+      },
+      {
+        "x": -5.66307,
+        "y": 0.0
+      }
+    ],
+    "extrap_right_abs": [
+      {
+        "x": 3.57586,
+        "y": -1.7245642072674772
+      },
+      {
+        "x": 4.5758600000000005,
+        "y": -1.7245642072674772
+      }
+    ],
+    "stationary": {
+      "Reactif": {
+        "x": -6.66307,
+        "y": 0.0,
+        "role": "reactant (opt)"
+      },
+      "TS": {
+        "x": 0.0,
+        "y": 28.97364856068143,
+        "role": "transition state"
+      },
+      "Produit": {
+        "x": 4.5758600000000005,
+        "y": -1.7245642072674772,
+        "role": "product (opt)"
+      }
+    },
+    "arox": {
+      "Reactif": {
+        "x": -6.66307,
+        "y": 0.0,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.023717,
+            "EN": 0.246765,
+            "GEO": 0.729519,
+            "LDM_OffDiag": 0.591056,
+            "LDM_Diag": 1.010346,
+            "LDM_Frob": 1.170532,
+            "LDM_RMSD": 0.234106,
+            "LDM_CT": -11.03,
+            "Q_Frob": 0.375386,
+            "Q_RMSD": 0.083939,
+            "S_hom": 0.427366,
+            "NICS_iso": -3.95,
+            "NICS_zz_g": 0.67,
+            "NICS_zz_l": -14.47
+          },
+          "_global": {
+            "HOMA_TOTAL": -55.04038,
+            "Q_G": 0.073418,
+            "S_hom_G": 0.131245,
+            "S_G": 0.162446
+          },
+          "periph5": {
+            "HOMA": -144.425507,
+            "EN": 65.777141,
+            "GEO": 79.648366,
+            "LDM_OffDiag": 1.358364,
+            "LDM_Diag": 1.050071,
+            "LDM_Frob": 1.716916,
+            "LDM_RMSD": 0.343383,
+            "LDM_CT": -22.018333,
+            "Q_Frob": 0.491422,
+            "Q_RMSD": 0.109885,
+            "S_hom": 0.163109,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -119.813444,
+            "EN": 39.470966,
+            "GEO": 81.342477,
+            "LDM_OffDiag": 1.315386,
+            "LDM_Diag": 1.360079,
+            "LDM_Frob": 1.892103,
+            "LDM_RMSD": 0.315351,
+            "LDM_CT": -16.580278,
+            "Q_Frob": 0.569239,
+            "Q_RMSD": 0.103928,
+            "S_hom": 0.186076,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983243,
+            "EN": 0.001154,
+            "GEO": 0.015603,
+            "LDM_OffDiag": 0.471712,
+            "LDM_Diag": 1.718626,
+            "LDM_Frob": 1.782186,
+            "LDM_RMSD": 0.297031,
+            "LDM_CT": -12.468333,
+            "Q_Frob": 0.257572,
+            "Q_RMSD": 0.047026,
+            "S_hom": 0.404772,
+            "NICS_iso": -5.94,
+            "NICS_zz_g": 0.23,
+            "NICS_zz_l": -19.01
+          },
+          "periph9": {
+            "HOMA": -79.798584,
+            "EN": 20.794718,
+            "GEO": 60.003866,
+            "LDM_OffDiag": 1.224747,
+            "LDM_Diag": 1.807317,
+            "LDM_Frob": 2.183209,
+            "LDM_RMSD": 0.242579,
+            "LDM_CT": -15.333148,
+            "Q_Frob": 0.472419,
+            "Q_RMSD": 0.055675,
+            "S_hom": 0.140292,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -71.494038,
+            "EN": 14.581021,
+            "GEO": 57.913018,
+            "LDM_OffDiag": 1.331501,
+            "LDM_Diag": 2.02652,
+            "LDM_Frob": 2.424805,
+            "LDM_RMSD": 0.24248,
+            "LDM_CT": -12.614833,
+            "Q_Frob": 0.641593,
+            "Q_RMSD": 0.06763,
+            "S_hom": 0.144618,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "TS": {
+        "x": 0.0,
+        "y": 29.64659344978404,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.186595,
+            "EN": 0.412474,
+            "GEO": 0.400932,
+            "LDM_OffDiag": 0.469989,
+            "LDM_Diag": 1.066408,
+            "LDM_Frob": 1.165383,
+            "LDM_RMSD": 0.233077,
+            "LDM_CT": -13.152667,
+            "Q_Frob": 0.260604,
+            "Q_RMSD": 0.058273,
+            "S_hom": 0.424389,
+            "NICS_iso": -4.96,
+            "NICS_zz_g": -5.71,
+            "NICS_zz_l": -16.22
+          },
+          "_global": {
+            "HOMA_TOTAL": -12.308371,
+            "Q_G": 0.071739,
+            "S_hom_G": 0.132165,
+            "S_G": 0.169102
+          },
+          "periph5": {
+            "HOMA": -33.388071,
+            "EN": 18.48769,
+            "GEO": 15.90038,
+            "LDM_OffDiag": 1.024724,
+            "LDM_Diag": 1.114411,
+            "LDM_Frob": 1.513926,
+            "LDM_RMSD": 0.302785,
+            "LDM_CT": -20.643333,
+            "Q_Frob": 0.492125,
+            "Q_RMSD": 0.110043,
+            "S_hom": 0.274152,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -27.00834,
+            "EN": 10.10452,
+            "GEO": 17.90382,
+            "LDM_OffDiag": 0.871954,
+            "LDM_Diag": 1.4108,
+            "LDM_Frob": 1.658512,
+            "LDM_RMSD": 0.276419,
+            "LDM_CT": -16.117778,
+            "Q_Frob": 0.412969,
+            "Q_RMSD": 0.075397,
+            "S_hom": 0.273918,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.782717,
+            "EN": 0.080772,
+            "GEO": 0.136511,
+            "LDM_OffDiag": 0.479242,
+            "LDM_Diag": 1.734336,
+            "LDM_Frob": 1.799331,
+            "LDM_RMSD": 0.299889,
+            "LDM_CT": -14.145278,
+            "Q_Frob": 0.241043,
+            "Q_RMSD": 0.044008,
+            "S_hom": 0.364959,
+            "NICS_iso": -3.72,
+            "NICS_zz_g": 2.08,
+            "NICS_zz_l": -13.24
+          },
+          "periph9": {
+            "HOMA": -18.177432,
+            "EN": 6.011319,
+            "GEO": 13.166113,
+            "LDM_OffDiag": 0.891894,
+            "LDM_Diag": 1.851482,
+            "LDM_Frob": 2.055106,
+            "LDM_RMSD": 0.228345,
+            "LDM_CT": -15.02463,
+            "Q_Frob": 0.433808,
+            "Q_RMSD": 0.051125,
+            "S_hom": 0.180118,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -15.870657,
+            "EN": 3.857335,
+            "GEO": 13.013322,
+            "LDM_OffDiag": 0.908723,
+            "LDM_Diag": 2.063154,
+            "LDM_Frob": 2.254414,
+            "LDM_RMSD": 0.225441,
+            "LDM_CT": -12.687833,
+            "Q_Frob": 0.476478,
+            "Q_RMSD": 0.050225,
+            "S_hom": 0.180896,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "Produit": {
+        "x": 4.5758600000000005,
+        "y": -2.2102327297117625,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -1.311634,
+            "EN": 1.437972,
+            "GEO": 0.873662,
+            "LDM_OffDiag": 0.6768,
+            "LDM_Diag": 1.119342,
+            "LDM_Frob": 1.308046,
+            "LDM_RMSD": 0.261609,
+            "LDM_CT": -14.989333,
+            "Q_Frob": 0.421304,
+            "Q_RMSD": 0.094207,
+            "S_hom": 0.379853,
+            "NICS_iso": -3.91,
+            "NICS_zz_g": -5.64,
+            "NICS_zz_l": -9.08
+          },
+          "_global": {
+            "HOMA_TOTAL": -1.552211,
+            "Q_G": 0.07165,
+            "S_hom_G": 0.132067,
+            "S_G": 0.167345
+          },
+          "periph5": {
+            "HOMA": -3.708977,
+            "EN": 4.592386,
+            "GEO": 0.116591,
+            "LDM_OffDiag": 0.714663,
+            "LDM_Diag": 1.244238,
+            "LDM_Frob": 1.434877,
+            "LDM_RMSD": 0.286975,
+            "LDM_CT": -19.693333,
+            "Q_Frob": 0.413998,
+            "Q_RMSD": 0.092573,
+            "S_hom": 0.38189,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -2.717356,
+            "EN": 2.536385,
+            "GEO": 1.180971,
+            "LDM_OffDiag": 0.687993,
+            "LDM_Diag": 1.515197,
+            "LDM_Frob": 1.664078,
+            "LDM_RMSD": 0.277346,
+            "LDM_CT": -16.024722,
+            "Q_Frob": 0.419908,
+            "Q_RMSD": 0.076664,
+            "S_hom": 0.297611,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.491257,
+            "EN": 0.578075,
+            "GEO": 0.913182,
+            "LDM_OffDiag": 0.602685,
+            "LDM_Diag": 1.752656,
+            "LDM_Frob": 1.853384,
+            "LDM_RMSD": 0.308897,
+            "LDM_CT": -15.7425,
+            "Q_Frob": 0.340285,
+            "Q_RMSD": 0.062127,
+            "S_hom": 0.321334,
+            "NICS_iso": -1.62,
+            "NICS_zz_g": 1.61,
+            "NICS_zz_l": -6.31
+          },
+          "periph9": {
+            "HOMA": -1.616403,
+            "EN": 1.506672,
+            "GEO": 1.109731,
+            "LDM_OffDiag": 0.666927,
+            "LDM_Diag": 1.918069,
+            "LDM_Frob": 2.030709,
+            "LDM_RMSD": 0.225634,
+            "LDM_CT": -14.859074,
+            "Q_Frob": 0.391826,
+            "Q_RMSD": 0.046177,
+            "S_hom": 0.201268,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -1.230688,
+            "EN": 0.977703,
+            "GEO": 1.252985,
+            "LDM_OffDiag": 0.789799,
+            "LDM_Diag": 2.115446,
+            "LDM_Frob": 2.258073,
+            "LDM_RMSD": 0.225807,
+            "LDM_CT": -13.002667,
+            "Q_Frob": 0.515194,
+            "Q_RMSD": 0.054306,
+            "S_hom": 0.187588,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P1": {
+        "x": -4.47116,
+        "y": 3.251570969836111,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.039217,
+            "EN": 0.244038,
+            "GEO": 0.716745,
+            "LDM_OffDiag": 0.582696,
+            "LDM_Diag": 1.017595,
+            "LDM_Frob": 1.172618,
+            "LDM_RMSD": 0.234524,
+            "LDM_CT": -11.165667,
+            "Q_Frob": 0.367993,
+            "Q_RMSD": 0.082286,
+            "S_hom": 0.426969,
+            "NICS_iso": -3.99,
+            "NICS_zz_g": 0.36,
+            "NICS_zz_l": -14.62
+          },
+          "_global": {
+            "HOMA_TOTAL": -45.066429,
+            "Q_G": 0.073364,
+            "S_hom_G": 0.131476,
+            "S_G": 0.162968
+          },
+          "periph5": {
+            "HOMA": -118.511257,
+            "EN": 54.652103,
+            "GEO": 64.859154,
+            "LDM_OffDiag": 1.34454,
+            "LDM_Diag": 1.057231,
+            "LDM_Frob": 1.710417,
+            "LDM_RMSD": 0.342083,
+            "LDM_CT": -21.965,
+            "Q_Frob": 0.507848,
+            "Q_RMSD": 0.113558,
+            "S_hom": 0.168048,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -98.203568,
+            "EN": 32.281026,
+            "GEO": 66.922543,
+            "LDM_OffDiag": 1.296316,
+            "LDM_Diag": 1.369498,
+            "LDM_Frob": 1.885725,
+            "LDM_RMSD": 0.314288,
+            "LDM_CT": -16.580278,
+            "Q_Frob": 0.572583,
+            "Q_RMSD": 0.104539,
+            "S_hom": 0.19026,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983951,
+            "EN": 0.000889,
+            "GEO": 0.01516,
+            "LDM_OffDiag": 0.469767,
+            "LDM_Diag": 1.725317,
+            "LDM_Frob": 1.788127,
+            "LDM_RMSD": 0.298021,
+            "LDM_CT": -12.575278,
+            "Q_Frob": 0.254866,
+            "Q_RMSD": 0.046532,
+            "S_hom": 0.403686,
+            "NICS_iso": -5.93,
+            "NICS_zz_g": 0.5,
+            "NICS_zz_l": -18.97
+          },
+          "periph9": {
+            "HOMA": -65.400616,
+            "EN": 17.314057,
+            "GEO": 49.086559,
+            "LDM_OffDiag": 1.210249,
+            "LDM_Diag": 1.815144,
+            "LDM_Frob": 2.181616,
+            "LDM_RMSD": 0.242402,
+            "LDM_CT": -15.333889,
+            "Q_Frob": 0.4827,
+            "Q_RMSD": 0.056887,
+            "S_hom": 0.142309,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -58.527067,
+            "EN": 11.954619,
+            "GEO": 47.572448,
+            "LDM_OffDiag": 1.312219,
+            "LDM_Diag": 2.035954,
+            "LDM_Frob": 2.422195,
+            "LDM_RMSD": 0.242219,
+            "LDM_CT": -12.635167,
+            "Q_Frob": 0.641309,
+            "Q_RMSD": 0.0676,
+            "S_hom": 0.146644,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P2": {
+        "x": -2.68274,
+        "y": 13.65108444767377,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.115265,
+            "EN": 0.243649,
+            "GEO": 0.641086,
+            "LDM_OffDiag": 0.549605,
+            "LDM_Diag": 1.027931,
+            "LDM_Frob": 1.165636,
+            "LDM_RMSD": 0.233127,
+            "LDM_CT": -11.522667,
+            "Q_Frob": 0.338581,
+            "Q_RMSD": 0.075709,
+            "S_hom": 0.426723,
+            "NICS_iso": -4.13,
+            "NICS_zz_g": -0.83,
+            "NICS_zz_l": -15.09
+          },
+          "_global": {
+            "HOMA_TOTAL": -29.021074,
+            "Q_G": 0.073136,
+            "S_hom_G": 0.132281,
+            "S_G": 0.164528
+          },
+          "periph5": {
+            "HOMA": -76.865979,
+            "EN": 36.729868,
+            "GEO": 41.136111,
+            "LDM_OffDiag": 1.293354,
+            "LDM_Diag": 1.073647,
+            "LDM_Frob": 1.680917,
+            "LDM_RMSD": 0.336183,
+            "LDM_CT": -21.752667,
+            "Q_Frob": 0.533718,
+            "Q_RMSD": 0.119343,
+            "S_hom": 0.184861,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -63.433441,
+            "EN": 20.887463,
+            "GEO": 43.545978,
+            "LDM_OffDiag": 1.224091,
+            "LDM_Diag": 1.387039,
+            "LDM_Frob": 1.84994,
+            "LDM_RMSD": 0.308323,
+            "LDM_CT": -16.52,
+            "Q_Frob": 0.560747,
+            "Q_RMSD": 0.102378,
+            "S_hom": 0.204704,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.982312,
+            "EN": 0.002155,
+            "GEO": 0.015533,
+            "LDM_OffDiag": 0.463692,
+            "LDM_Diag": 1.731988,
+            "LDM_Frob": 1.792984,
+            "LDM_RMSD": 0.298831,
+            "LDM_CT": -12.874444,
+            "Q_Frob": 0.245053,
+            "Q_RMSD": 0.04474,
+            "S_hom": 0.399436,
+            "NICS_iso": -5.71,
+            "NICS_zz_g": 1.06,
+            "NICS_zz_l": -18.43
+          },
+          "periph9": {
+            "HOMA": -42.268607,
+            "EN": 11.691677,
+            "GEO": 31.57693,
+            "LDM_OffDiag": 1.157003,
+            "LDM_Diag": 1.825222,
+            "LDM_Frob": 2.161039,
+            "LDM_RMSD": 0.240115,
+            "LDM_CT": -15.283704,
+            "Q_Frob": 0.494632,
+            "Q_RMSD": 0.058293,
+            "S_hom": 0.148913,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -37.668821,
+            "EN": 7.780129,
+            "GEO": 30.888693,
+            "LDM_OffDiag": 1.24026,
+            "LDM_Diag": 2.047373,
+            "LDM_Frob": 2.393738,
+            "LDM_RMSD": 0.239374,
+            "LDM_CT": -12.640667,
+            "Q_Frob": 0.62199,
+            "Q_RMSD": 0.065563,
+            "S_hom": 0.153313,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P3": {
+        "x": -1.19236,
+        "y": 24.61177869745069,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.214084,
+            "EN": 0.28234,
+            "GEO": 0.503576,
+            "LDM_OffDiag": 0.4937,
+            "LDM_Diag": 1.045864,
+            "LDM_Frob": 1.156534,
+            "LDM_RMSD": 0.231307,
+            "LDM_CT": -12.194,
+            "Q_Frob": 0.286734,
+            "Q_RMSD": 0.064116,
+            "S_hom": 0.427751,
+            "NICS_iso": -4.49,
+            "NICS_zz_g": -3.06,
+            "NICS_zz_l": -15.87
+          },
+          "_global": {
+            "HOMA_TOTAL": -18.894481,
+            "Q_G": 0.072531,
+            "S_hom_G": 0.133152,
+            "S_G": 0.166879
+          },
+          "periph5": {
+            "HOMA": -50.612188,
+            "EN": 25.583037,
+            "GEO": 26.029151,
+            "LDM_OffDiag": 1.189361,
+            "LDM_Diag": 1.091248,
+            "LDM_Frob": 1.614126,
+            "LDM_RMSD": 0.322825,
+            "LDM_CT": -21.302,
+            "Q_Frob": 0.530779,
+            "Q_RMSD": 0.118686,
+            "S_hom": 0.217985,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -41.435403,
+            "EN": 14.081383,
+            "GEO": 28.354021,
+            "LDM_OffDiag": 1.078944,
+            "LDM_Diag": 1.400429,
+            "LDM_Frob": 1.767858,
+            "LDM_RMSD": 0.294643,
+            "LDM_CT": -16.35,
+            "Q_Frob": 0.502295,
+            "Q_RMSD": 0.091706,
+            "S_hom": 0.23271,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.942499,
+            "EN": 0.018344,
+            "GEO": 0.039157,
+            "LDM_OffDiag": 0.459796,
+            "LDM_Diag": 1.73672,
+            "LDM_Frob": 1.796554,
+            "LDM_RMSD": 0.299426,
+            "LDM_CT": -13.403611,
+            "Q_Frob": 0.232787,
+            "Q_RMSD": 0.042501,
+            "S_hom": 0.387845,
+            "NICS_iso": -4.98,
+            "NICS_zz_g": 1.67,
+            "NICS_zz_l": -16.67
+          },
+          "periph9": {
+            "HOMA": -27.707722,
+            "EN": 8.238476,
+            "GEO": 20.469246,
+            "LDM_OffDiag": 1.051221,
+            "LDM_Diag": 1.838347,
+            "LDM_Frob": 2.117684,
+            "LDM_RMSD": 0.235298,
+            "LDM_CT": -15.187593,
+            "Q_Frob": 0.478287,
+            "Q_RMSD": 0.056367,
+            "S_hom": 0.161289,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -24.492098,
+            "EN": 5.316591,
+            "GEO": 20.175507,
+            "LDM_OffDiag": 1.099436,
+            "LDM_Diag": 2.058072,
+            "LDM_Frob": 2.333328,
+            "LDM_RMSD": 0.233333,
+            "LDM_CT": -12.6545,
+            "Q_Frob": 0.559264,
+            "Q_RMSD": 0.058952,
+            "S_hom": 0.16516,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P4": {
+        "x": 0.89432,
+        "y": 26.022535763029527,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.032668,
+            "EN": 0.59477,
+            "GEO": 0.437898,
+            "LDM_OffDiag": 0.520926,
+            "LDM_Diag": 1.079503,
+            "LDM_Frob": 1.19862,
+            "LDM_RMSD": 0.239724,
+            "LDM_CT": -13.844,
+            "Q_Frob": 0.301984,
+            "Q_RMSD": 0.067526,
+            "S_hom": 0.409438,
+            "NICS_iso": -4.88,
+            "NICS_zz_g": -6.53,
+            "NICS_zz_l": -14.89
+          },
+          "_global": {
+            "HOMA_TOTAL": -8.39547,
+            "Q_G": 0.071331,
+            "S_hom_G": 0.131889,
+            "S_G": 0.169613
+          },
+          "periph5": {
+            "HOMA": -22.909751,
+            "EN": 14.134552,
+            "GEO": 9.775199,
+            "LDM_OffDiag": 0.894266,
+            "LDM_Diag": 1.13891,
+            "LDM_Frob": 1.448043,
+            "LDM_RMSD": 0.289609,
+            "LDM_CT": -20.153333,
+            "Q_Frob": 0.455964,
+            "Q_RMSD": 0.101957,
+            "S_hom": 0.324405,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -18.320928,
+            "EN": 7.778179,
+            "GEO": 11.542749,
+            "LDM_OffDiag": 0.748311,
+            "LDM_Diag": 1.427078,
+            "LDM_Frob": 1.611372,
+            "LDM_RMSD": 0.268562,
+            "LDM_CT": -15.990278,
+            "Q_Frob": 0.380618,
+            "Q_RMSD": 0.069491,
+            "S_hom": 0.29936,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.535661,
+            "EN": 0.176558,
+            "GEO": 0.287781,
+            "LDM_OffDiag": 0.516687,
+            "LDM_Diag": 1.733901,
+            "LDM_Frob": 1.809248,
+            "LDM_RMSD": 0.301541,
+            "LDM_CT": -14.714722,
+            "Q_Frob": 0.270997,
+            "Q_RMSD": 0.049477,
+            "S_hom": 0.346168,
+            "NICS_iso": -2.73,
+            "NICS_zz_g": 2.01,
+            "NICS_zz_l": -10.18
+          },
+          "periph9": {
+            "HOMA": -12.378586,
+            "EN": 4.625213,
+            "GEO": 8.753373,
+            "LDM_OffDiag": 0.777925,
+            "LDM_Diag": 1.863442,
+            "LDM_Frob": 2.019302,
+            "LDM_RMSD": 0.224367,
+            "LDM_CT": -14.891481,
+            "Q_Frob": 0.404315,
+            "Q_RMSD": 0.047649,
+            "S_hom": 0.193862,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -10.678409,
+            "EN": 2.989903,
+            "GEO": 8.688506,
+            "LDM_OffDiag": 0.807541,
+            "LDM_Diag": 2.070151,
+            "LDM_Frob": 2.222082,
+            "LDM_RMSD": 0.222208,
+            "LDM_CT": -12.751833,
+            "Q_Frob": 0.456437,
+            "Q_RMSD": 0.048113,
+            "S_hom": 0.189742,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P5": {
+        "x": 2.0866,
+        "y": 13.294228761532448,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.56027,
+            "EN": 0.947101,
+            "GEO": 0.613169,
+            "LDM_OffDiag": 0.608039,
+            "LDM_Diag": 1.097043,
+            "LDM_Frob": 1.254279,
+            "LDM_RMSD": 0.250856,
+            "LDM_CT": -14.467,
+            "Q_Frob": 0.370663,
+            "Q_RMSD": 0.082883,
+            "S_hom": 0.391607,
+            "NICS_iso": -4.35,
+            "NICS_zz_g": -6.11,
+            "NICS_zz_l": -11.95
+          },
+          "_global": {
+            "HOMA_TOTAL": -4.509497,
+            "Q_G": 0.071218,
+            "S_hom_G": 0.13418,
+            "S_G": 0.16884
+          },
+          "periph5": {
+            "HOMA": -12.166628,
+            "EN": 9.363272,
+            "GEO": 3.803356,
+            "LDM_OffDiag": 0.783819,
+            "LDM_Diag": 1.182458,
+            "LDM_Frob": 1.418654,
+            "LDM_RMSD": 0.283731,
+            "LDM_CT": -19.809667,
+            "Q_Frob": 0.427726,
+            "Q_RMSD": 0.095642,
+            "S_hom": 0.367686,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -9.538731,
+            "EN": 5.231607,
+            "GEO": 5.307124,
+            "LDM_OffDiag": 0.694484,
+            "LDM_Diag": 1.457409,
+            "LDM_Frob": 1.614419,
+            "LDM_RMSD": 0.26907,
+            "LDM_CT": -15.938056,
+            "Q_Frob": 0.395677,
+            "Q_RMSD": 0.07224,
+            "S_hom": 0.306094,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.072693,
+            "EN": 0.362591,
+            "GEO": 0.564715,
+            "LDM_OffDiag": 0.564661,
+            "LDM_Diag": 1.736496,
+            "LDM_Frob": 1.825996,
+            "LDM_RMSD": 0.304333,
+            "LDM_CT": -15.244444,
+            "Q_Frob": 0.310556,
+            "Q_RMSD": 0.056699,
+            "S_hom": 0.330966,
+            "NICS_iso": -1.96,
+            "NICS_zz_g": 1.77,
+            "NICS_zz_l": -7.55
+          },
+          "periph9": {
+            "HOMA": -6.405482,
+            "EN": 3.094168,
+            "GEO": 4.311314,
+            "LDM_OffDiag": 0.699814,
+            "LDM_Diag": 1.884403,
+            "LDM_Frob": 2.010153,
+            "LDM_RMSD": 0.22335,
+            "LDM_CT": -14.829259,
+            "Q_Frob": 0.39196,
+            "Q_RMSD": 0.046193,
+            "S_hom": 0.201778,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -5.404858,
+            "EN": 2.032083,
+            "GEO": 4.372775,
+            "LDM_OffDiag": 0.7786,
+            "LDM_Diag": 2.083194,
+            "LDM_Frob": 2.223941,
+            "LDM_RMSD": 0.222394,
+            "LDM_CT": -12.860333,
+            "Q_Frob": 0.483409,
+            "Q_RMSD": 0.050956,
+            "S_hom": 0.191384,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P6": {
+        "x": 2.98058,
+        "y": 3.362683266266671,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -1.004116,
+            "EN": 1.239155,
+            "GEO": 0.764962,
+            "LDM_OffDiag": 0.651673,
+            "LDM_Diag": 1.110893,
+            "LDM_Frob": 1.287929,
+            "LDM_RMSD": 0.257586,
+            "LDM_CT": -14.789667,
+            "Q_Frob": 0.403224,
+            "Q_RMSD": 0.090164,
+            "S_hom": 0.384334,
+            "NICS_iso": -4.06,
+            "NICS_zz_g": -5.79,
+            "NICS_zz_l": -10.17
+          },
+          "_global": {
+            "HOMA_TOTAL": -2.602275,
+            "Q_G": 0.071355,
+            "S_hom_G": 0.133097,
+            "S_G": 0.168028
+          },
+          "periph5": {
+            "HOMA": -6.716233,
+            "EN": 6.561901,
+            "GEO": 1.154332,
+            "LDM_OffDiag": 0.739447,
+            "LDM_Diag": 1.21459,
+            "LDM_Frob": 1.421974,
+            "LDM_RMSD": 0.284395,
+            "LDM_CT": -19.71,
+            "Q_Frob": 0.418344,
+            "Q_RMSD": 0.093544,
+            "S_hom": 0.379513,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -5.135903,
+            "EN": 3.680753,
+            "GEO": 2.45515,
+            "LDM_OffDiag": 0.688952,
+            "LDM_Diag": 1.488208,
+            "LDM_Frob": 1.639945,
+            "LDM_RMSD": 0.273324,
+            "LDM_CT": -15.985278,
+            "Q_Frob": 0.41129,
+            "Q_RMSD": 0.075091,
+            "S_hom": 0.302156,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.280132,
+            "EN": 0.507306,
+            "GEO": 0.772826,
+            "LDM_OffDiag": 0.588723,
+            "LDM_Diag": 1.74115,
+            "LDM_Frob": 1.837987,
+            "LDM_RMSD": 0.306331,
+            "LDM_CT": -15.508056,
+            "Q_Frob": 0.329549,
+            "Q_RMSD": 0.060167,
+            "S_hom": 0.325171,
+            "NICS_iso": -1.72,
+            "NICS_zz_g": 1.68,
+            "NICS_zz_l": -6.68
+          },
+          "periph9": {
+            "HOMA": -3.34915,
+            "EN": 2.1865,
+            "GEO": 2.162649,
+            "LDM_OffDiag": 0.677296,
+            "LDM_Diag": 1.899515,
+            "LDM_Frob": 2.016652,
+            "LDM_RMSD": 0.224072,
+            "LDM_CT": -14.824074,
+            "Q_Frob": 0.391651,
+            "Q_RMSD": 0.046156,
+            "S_hom": 0.202242,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -2.73766,
+            "EN": 1.442691,
+            "GEO": 2.294969,
+            "LDM_OffDiag": 0.784601,
+            "LDM_Diag": 2.098146,
+            "LDM_Frob": 2.240048,
+            "LDM_RMSD": 0.224005,
+            "LDM_CT": -12.942167,
+            "Q_Frob": 0.504061,
+            "Q_RMSD": 0.053133,
+            "S_hom": 0.189482,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      }
+    },
+    "arox_abs": {
+      "Reactif": {
+        "x": -6.66307,
+        "y": 0.0,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.023717,
+            "EN": 0.246765,
+            "GEO": 0.729519,
+            "LDM_OffDiag": 0.591056,
+            "LDM_Diag": 1.010346,
+            "LDM_Frob": 1.170532,
+            "LDM_RMSD": 0.234106,
+            "LDM_CT": -11.03,
+            "Q_Frob": 0.375386,
+            "Q_RMSD": 0.083939,
+            "S_hom": 0.427366,
+            "NICS_iso": -3.95,
+            "NICS_zz_g": 0.67,
+            "NICS_zz_l": -14.47
+          },
+          "_global": {
+            "HOMA_TOTAL": -55.04038,
+            "Q_G": 0.073418,
+            "S_hom_G": 0.131245,
+            "S_G": 0.162446
+          },
+          "periph5": {
+            "HOMA": -144.425507,
+            "EN": 65.777141,
+            "GEO": 79.648366,
+            "LDM_OffDiag": 1.358364,
+            "LDM_Diag": 1.050071,
+            "LDM_Frob": 1.716916,
+            "LDM_RMSD": 0.343383,
+            "LDM_CT": -22.018333,
+            "Q_Frob": 0.491422,
+            "Q_RMSD": 0.109885,
+            "S_hom": 0.163109,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -119.813444,
+            "EN": 39.470966,
+            "GEO": 81.342477,
+            "LDM_OffDiag": 1.315386,
+            "LDM_Diag": 1.360079,
+            "LDM_Frob": 1.892103,
+            "LDM_RMSD": 0.315351,
+            "LDM_CT": -16.580278,
+            "Q_Frob": 0.569239,
+            "Q_RMSD": 0.103928,
+            "S_hom": 0.186076,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983243,
+            "EN": 0.001154,
+            "GEO": 0.015603,
+            "LDM_OffDiag": 0.471712,
+            "LDM_Diag": 1.718626,
+            "LDM_Frob": 1.782186,
+            "LDM_RMSD": 0.297031,
+            "LDM_CT": -12.468333,
+            "Q_Frob": 0.257572,
+            "Q_RMSD": 0.047026,
+            "S_hom": 0.404772,
+            "NICS_iso": -5.94,
+            "NICS_zz_g": 0.23,
+            "NICS_zz_l": -19.01
+          },
+          "periph9": {
+            "HOMA": -79.798584,
+            "EN": 20.794718,
+            "GEO": 60.003866,
+            "LDM_OffDiag": 1.224747,
+            "LDM_Diag": 1.807317,
+            "LDM_Frob": 2.183209,
+            "LDM_RMSD": 0.242579,
+            "LDM_CT": -15.333148,
+            "Q_Frob": 0.472419,
+            "Q_RMSD": 0.055675,
+            "S_hom": 0.140292,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -71.494038,
+            "EN": 14.581021,
+            "GEO": 57.913018,
+            "LDM_OffDiag": 1.331501,
+            "LDM_Diag": 2.02652,
+            "LDM_Frob": 2.424805,
+            "LDM_RMSD": 0.24248,
+            "LDM_CT": -12.614833,
+            "Q_Frob": 0.641593,
+            "Q_RMSD": 0.06763,
+            "S_hom": 0.144618,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P1": {
+        "x": -4.47116,
+        "y": 3.251570969836111,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.039217,
+            "EN": 0.244038,
+            "GEO": 0.716745,
+            "LDM_OffDiag": 0.582696,
+            "LDM_Diag": 1.017595,
+            "LDM_Frob": 1.172618,
+            "LDM_RMSD": 0.234524,
+            "LDM_CT": -11.165667,
+            "Q_Frob": 0.367993,
+            "Q_RMSD": 0.082286,
+            "S_hom": 0.426969,
+            "NICS_iso": -3.99,
+            "NICS_zz_g": 0.36,
+            "NICS_zz_l": -14.62
+          },
+          "_global": {
+            "HOMA_TOTAL": -45.066429,
+            "Q_G": 0.073364,
+            "S_hom_G": 0.131476,
+            "S_G": 0.162968
+          },
+          "periph5": {
+            "HOMA": -118.511257,
+            "EN": 54.652103,
+            "GEO": 64.859154,
+            "LDM_OffDiag": 1.34454,
+            "LDM_Diag": 1.057231,
+            "LDM_Frob": 1.710417,
+            "LDM_RMSD": 0.342083,
+            "LDM_CT": -21.965,
+            "Q_Frob": 0.507848,
+            "Q_RMSD": 0.113558,
+            "S_hom": 0.168048,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -98.203568,
+            "EN": 32.281026,
+            "GEO": 66.922543,
+            "LDM_OffDiag": 1.296316,
+            "LDM_Diag": 1.369498,
+            "LDM_Frob": 1.885725,
+            "LDM_RMSD": 0.314288,
+            "LDM_CT": -16.580278,
+            "Q_Frob": 0.572583,
+            "Q_RMSD": 0.104539,
+            "S_hom": 0.19026,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983951,
+            "EN": 0.000889,
+            "GEO": 0.01516,
+            "LDM_OffDiag": 0.469767,
+            "LDM_Diag": 1.725317,
+            "LDM_Frob": 1.788127,
+            "LDM_RMSD": 0.298021,
+            "LDM_CT": -12.575278,
+            "Q_Frob": 0.254866,
+            "Q_RMSD": 0.046532,
+            "S_hom": 0.403686,
+            "NICS_iso": -5.93,
+            "NICS_zz_g": 0.5,
+            "NICS_zz_l": -18.97
+          },
+          "periph9": {
+            "HOMA": -65.400616,
+            "EN": 17.314057,
+            "GEO": 49.086559,
+            "LDM_OffDiag": 1.210249,
+            "LDM_Diag": 1.815144,
+            "LDM_Frob": 2.181616,
+            "LDM_RMSD": 0.242402,
+            "LDM_CT": -15.333889,
+            "Q_Frob": 0.4827,
+            "Q_RMSD": 0.056887,
+            "S_hom": 0.142309,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -58.527067,
+            "EN": 11.954619,
+            "GEO": 47.572448,
+            "LDM_OffDiag": 1.312219,
+            "LDM_Diag": 2.035954,
+            "LDM_Frob": 2.422195,
+            "LDM_RMSD": 0.242219,
+            "LDM_CT": -12.635167,
+            "Q_Frob": 0.641309,
+            "Q_RMSD": 0.0676,
+            "S_hom": 0.146644,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P2": {
+        "x": -2.68274,
+        "y": 13.65108444767377,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.115265,
+            "EN": 0.243649,
+            "GEO": 0.641086,
+            "LDM_OffDiag": 0.549605,
+            "LDM_Diag": 1.027931,
+            "LDM_Frob": 1.165636,
+            "LDM_RMSD": 0.233127,
+            "LDM_CT": -11.522667,
+            "Q_Frob": 0.338581,
+            "Q_RMSD": 0.075709,
+            "S_hom": 0.426723,
+            "NICS_iso": -4.13,
+            "NICS_zz_g": -0.83,
+            "NICS_zz_l": -15.09
+          },
+          "_global": {
+            "HOMA_TOTAL": -29.021074,
+            "Q_G": 0.073136,
+            "S_hom_G": 0.132281,
+            "S_G": 0.164528
+          },
+          "periph5": {
+            "HOMA": -76.865979,
+            "EN": 36.729868,
+            "GEO": 41.136111,
+            "LDM_OffDiag": 1.293354,
+            "LDM_Diag": 1.073647,
+            "LDM_Frob": 1.680917,
+            "LDM_RMSD": 0.336183,
+            "LDM_CT": -21.752667,
+            "Q_Frob": 0.533718,
+            "Q_RMSD": 0.119343,
+            "S_hom": 0.184861,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -63.433441,
+            "EN": 20.887463,
+            "GEO": 43.545978,
+            "LDM_OffDiag": 1.224091,
+            "LDM_Diag": 1.387039,
+            "LDM_Frob": 1.84994,
+            "LDM_RMSD": 0.308323,
+            "LDM_CT": -16.52,
+            "Q_Frob": 0.560747,
+            "Q_RMSD": 0.102378,
+            "S_hom": 0.204704,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.982312,
+            "EN": 0.002155,
+            "GEO": 0.015533,
+            "LDM_OffDiag": 0.463692,
+            "LDM_Diag": 1.731988,
+            "LDM_Frob": 1.792984,
+            "LDM_RMSD": 0.298831,
+            "LDM_CT": -12.874444,
+            "Q_Frob": 0.245053,
+            "Q_RMSD": 0.04474,
+            "S_hom": 0.399436,
+            "NICS_iso": -5.71,
+            "NICS_zz_g": 1.06,
+            "NICS_zz_l": -18.43
+          },
+          "periph9": {
+            "HOMA": -42.268607,
+            "EN": 11.691677,
+            "GEO": 31.57693,
+            "LDM_OffDiag": 1.157003,
+            "LDM_Diag": 1.825222,
+            "LDM_Frob": 2.161039,
+            "LDM_RMSD": 0.240115,
+            "LDM_CT": -15.283704,
+            "Q_Frob": 0.494632,
+            "Q_RMSD": 0.058293,
+            "S_hom": 0.148913,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -37.668821,
+            "EN": 7.780129,
+            "GEO": 30.888693,
+            "LDM_OffDiag": 1.24026,
+            "LDM_Diag": 2.047373,
+            "LDM_Frob": 2.393738,
+            "LDM_RMSD": 0.239374,
+            "LDM_CT": -12.640667,
+            "Q_Frob": 0.62199,
+            "Q_RMSD": 0.065563,
+            "S_hom": 0.153313,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P3": {
+        "x": -1.19236,
+        "y": 24.61177869745069,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.214084,
+            "EN": 0.28234,
+            "GEO": 0.503576,
+            "LDM_OffDiag": 0.4937,
+            "LDM_Diag": 1.045864,
+            "LDM_Frob": 1.156534,
+            "LDM_RMSD": 0.231307,
+            "LDM_CT": -12.194,
+            "Q_Frob": 0.286734,
+            "Q_RMSD": 0.064116,
+            "S_hom": 0.427751,
+            "NICS_iso": -4.49,
+            "NICS_zz_g": -3.06,
+            "NICS_zz_l": -15.87
+          },
+          "_global": {
+            "HOMA_TOTAL": -18.894481,
+            "Q_G": 0.072531,
+            "S_hom_G": 0.133152,
+            "S_G": 0.166879
+          },
+          "periph5": {
+            "HOMA": -50.612188,
+            "EN": 25.583037,
+            "GEO": 26.029151,
+            "LDM_OffDiag": 1.189361,
+            "LDM_Diag": 1.091248,
+            "LDM_Frob": 1.614126,
+            "LDM_RMSD": 0.322825,
+            "LDM_CT": -21.302,
+            "Q_Frob": 0.530779,
+            "Q_RMSD": 0.118686,
+            "S_hom": 0.217985,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -41.435403,
+            "EN": 14.081383,
+            "GEO": 28.354021,
+            "LDM_OffDiag": 1.078944,
+            "LDM_Diag": 1.400429,
+            "LDM_Frob": 1.767858,
+            "LDM_RMSD": 0.294643,
+            "LDM_CT": -16.35,
+            "Q_Frob": 0.502295,
+            "Q_RMSD": 0.091706,
+            "S_hom": 0.23271,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.942499,
+            "EN": 0.018344,
+            "GEO": 0.039157,
+            "LDM_OffDiag": 0.459796,
+            "LDM_Diag": 1.73672,
+            "LDM_Frob": 1.796554,
+            "LDM_RMSD": 0.299426,
+            "LDM_CT": -13.403611,
+            "Q_Frob": 0.232787,
+            "Q_RMSD": 0.042501,
+            "S_hom": 0.387845,
+            "NICS_iso": -4.98,
+            "NICS_zz_g": 1.67,
+            "NICS_zz_l": -16.67
+          },
+          "periph9": {
+            "HOMA": -27.707722,
+            "EN": 8.238476,
+            "GEO": 20.469246,
+            "LDM_OffDiag": 1.051221,
+            "LDM_Diag": 1.838347,
+            "LDM_Frob": 2.117684,
+            "LDM_RMSD": 0.235298,
+            "LDM_CT": -15.187593,
+            "Q_Frob": 0.478287,
+            "Q_RMSD": 0.056367,
+            "S_hom": 0.161289,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -24.492098,
+            "EN": 5.316591,
+            "GEO": 20.175507,
+            "LDM_OffDiag": 1.099436,
+            "LDM_Diag": 2.058072,
+            "LDM_Frob": 2.333328,
+            "LDM_RMSD": 0.233333,
+            "LDM_CT": -12.6545,
+            "Q_Frob": 0.559264,
+            "Q_RMSD": 0.058952,
+            "S_hom": 0.16516,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "TS": {
+        "x": 0.0,
+        "y": 29.64659344978404,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.186595,
+            "EN": 0.412474,
+            "GEO": 0.400932,
+            "LDM_OffDiag": 0.469989,
+            "LDM_Diag": 1.066408,
+            "LDM_Frob": 1.165383,
+            "LDM_RMSD": 0.233077,
+            "LDM_CT": -13.152667,
+            "Q_Frob": 0.260604,
+            "Q_RMSD": 0.058273,
+            "S_hom": 0.424389,
+            "NICS_iso": -4.96,
+            "NICS_zz_g": -5.71,
+            "NICS_zz_l": -16.22
+          },
+          "_global": {
+            "HOMA_TOTAL": -12.308371,
+            "Q_G": 0.071739,
+            "S_hom_G": 0.132165,
+            "S_G": 0.169102
+          },
+          "periph5": {
+            "HOMA": -33.388071,
+            "EN": 18.48769,
+            "GEO": 15.90038,
+            "LDM_OffDiag": 1.024724,
+            "LDM_Diag": 1.114411,
+            "LDM_Frob": 1.513926,
+            "LDM_RMSD": 0.302785,
+            "LDM_CT": -20.643333,
+            "Q_Frob": 0.492125,
+            "Q_RMSD": 0.110043,
+            "S_hom": 0.274152,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -27.00834,
+            "EN": 10.10452,
+            "GEO": 17.90382,
+            "LDM_OffDiag": 0.871954,
+            "LDM_Diag": 1.4108,
+            "LDM_Frob": 1.658512,
+            "LDM_RMSD": 0.276419,
+            "LDM_CT": -16.117778,
+            "Q_Frob": 0.412969,
+            "Q_RMSD": 0.075397,
+            "S_hom": 0.273918,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.782717,
+            "EN": 0.080772,
+            "GEO": 0.136511,
+            "LDM_OffDiag": 0.479242,
+            "LDM_Diag": 1.734336,
+            "LDM_Frob": 1.799331,
+            "LDM_RMSD": 0.299889,
+            "LDM_CT": -14.145278,
+            "Q_Frob": 0.241043,
+            "Q_RMSD": 0.044008,
+            "S_hom": 0.364959,
+            "NICS_iso": -3.72,
+            "NICS_zz_g": 2.08,
+            "NICS_zz_l": -13.24
+          },
+          "periph9": {
+            "HOMA": -18.177432,
+            "EN": 6.011319,
+            "GEO": 13.166113,
+            "LDM_OffDiag": 0.891894,
+            "LDM_Diag": 1.851482,
+            "LDM_Frob": 2.055106,
+            "LDM_RMSD": 0.228345,
+            "LDM_CT": -15.02463,
+            "Q_Frob": 0.433808,
+            "Q_RMSD": 0.051125,
+            "S_hom": 0.180118,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -15.870657,
+            "EN": 3.857335,
+            "GEO": 13.013322,
+            "LDM_OffDiag": 0.908723,
+            "LDM_Diag": 2.063154,
+            "LDM_Frob": 2.254414,
+            "LDM_RMSD": 0.225441,
+            "LDM_CT": -12.687833,
+            "Q_Frob": 0.476478,
+            "Q_RMSD": 0.050225,
+            "S_hom": 0.180896,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P4": {
+        "x": 0.89432,
+        "y": 26.022535763029527,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.032668,
+            "EN": 0.59477,
+            "GEO": 0.437898,
+            "LDM_OffDiag": 0.520926,
+            "LDM_Diag": 1.079503,
+            "LDM_Frob": 1.19862,
+            "LDM_RMSD": 0.239724,
+            "LDM_CT": -13.844,
+            "Q_Frob": 0.301984,
+            "Q_RMSD": 0.067526,
+            "S_hom": 0.409438,
+            "NICS_iso": -4.88,
+            "NICS_zz_g": -6.53,
+            "NICS_zz_l": -14.89
+          },
+          "_global": {
+            "HOMA_TOTAL": -8.39547,
+            "Q_G": 0.071331,
+            "S_hom_G": 0.131889,
+            "S_G": 0.169613
+          },
+          "periph5": {
+            "HOMA": -22.909751,
+            "EN": 14.134552,
+            "GEO": 9.775199,
+            "LDM_OffDiag": 0.894266,
+            "LDM_Diag": 1.13891,
+            "LDM_Frob": 1.448043,
+            "LDM_RMSD": 0.289609,
+            "LDM_CT": -20.153333,
+            "Q_Frob": 0.455964,
+            "Q_RMSD": 0.101957,
+            "S_hom": 0.324405,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -18.320928,
+            "EN": 7.778179,
+            "GEO": 11.542749,
+            "LDM_OffDiag": 0.748311,
+            "LDM_Diag": 1.427078,
+            "LDM_Frob": 1.611372,
+            "LDM_RMSD": 0.268562,
+            "LDM_CT": -15.990278,
+            "Q_Frob": 0.380618,
+            "Q_RMSD": 0.069491,
+            "S_hom": 0.29936,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.535661,
+            "EN": 0.176558,
+            "GEO": 0.287781,
+            "LDM_OffDiag": 0.516687,
+            "LDM_Diag": 1.733901,
+            "LDM_Frob": 1.809248,
+            "LDM_RMSD": 0.301541,
+            "LDM_CT": -14.714722,
+            "Q_Frob": 0.270997,
+            "Q_RMSD": 0.049477,
+            "S_hom": 0.346168,
+            "NICS_iso": -2.73,
+            "NICS_zz_g": 2.01,
+            "NICS_zz_l": -10.18
+          },
+          "periph9": {
+            "HOMA": -12.378586,
+            "EN": 4.625213,
+            "GEO": 8.753373,
+            "LDM_OffDiag": 0.777925,
+            "LDM_Diag": 1.863442,
+            "LDM_Frob": 2.019302,
+            "LDM_RMSD": 0.224367,
+            "LDM_CT": -14.891481,
+            "Q_Frob": 0.404315,
+            "Q_RMSD": 0.047649,
+            "S_hom": 0.193862,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -10.678409,
+            "EN": 2.989903,
+            "GEO": 8.688506,
+            "LDM_OffDiag": 0.807541,
+            "LDM_Diag": 2.070151,
+            "LDM_Frob": 2.222082,
+            "LDM_RMSD": 0.222208,
+            "LDM_CT": -12.751833,
+            "Q_Frob": 0.456437,
+            "Q_RMSD": 0.048113,
+            "S_hom": 0.189742,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P5": {
+        "x": 2.0866,
+        "y": 13.294228761532448,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.56027,
+            "EN": 0.947101,
+            "GEO": 0.613169,
+            "LDM_OffDiag": 0.608039,
+            "LDM_Diag": 1.097043,
+            "LDM_Frob": 1.254279,
+            "LDM_RMSD": 0.250856,
+            "LDM_CT": -14.467,
+            "Q_Frob": 0.370663,
+            "Q_RMSD": 0.082883,
+            "S_hom": 0.391607,
+            "NICS_iso": -4.35,
+            "NICS_zz_g": -6.11,
+            "NICS_zz_l": -11.95
+          },
+          "_global": {
+            "HOMA_TOTAL": -4.509497,
+            "Q_G": 0.071218,
+            "S_hom_G": 0.13418,
+            "S_G": 0.16884
+          },
+          "periph5": {
+            "HOMA": -12.166628,
+            "EN": 9.363272,
+            "GEO": 3.803356,
+            "LDM_OffDiag": 0.783819,
+            "LDM_Diag": 1.182458,
+            "LDM_Frob": 1.418654,
+            "LDM_RMSD": 0.283731,
+            "LDM_CT": -19.809667,
+            "Q_Frob": 0.427726,
+            "Q_RMSD": 0.095642,
+            "S_hom": 0.367686,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -9.538731,
+            "EN": 5.231607,
+            "GEO": 5.307124,
+            "LDM_OffDiag": 0.694484,
+            "LDM_Diag": 1.457409,
+            "LDM_Frob": 1.614419,
+            "LDM_RMSD": 0.26907,
+            "LDM_CT": -15.938056,
+            "Q_Frob": 0.395677,
+            "Q_RMSD": 0.07224,
+            "S_hom": 0.306094,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.072693,
+            "EN": 0.362591,
+            "GEO": 0.564715,
+            "LDM_OffDiag": 0.564661,
+            "LDM_Diag": 1.736496,
+            "LDM_Frob": 1.825996,
+            "LDM_RMSD": 0.304333,
+            "LDM_CT": -15.244444,
+            "Q_Frob": 0.310556,
+            "Q_RMSD": 0.056699,
+            "S_hom": 0.330966,
+            "NICS_iso": -1.96,
+            "NICS_zz_g": 1.77,
+            "NICS_zz_l": -7.55
+          },
+          "periph9": {
+            "HOMA": -6.405482,
+            "EN": 3.094168,
+            "GEO": 4.311314,
+            "LDM_OffDiag": 0.699814,
+            "LDM_Diag": 1.884403,
+            "LDM_Frob": 2.010153,
+            "LDM_RMSD": 0.22335,
+            "LDM_CT": -14.829259,
+            "Q_Frob": 0.39196,
+            "Q_RMSD": 0.046193,
+            "S_hom": 0.201778,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -5.404858,
+            "EN": 2.032083,
+            "GEO": 4.372775,
+            "LDM_OffDiag": 0.7786,
+            "LDM_Diag": 2.083194,
+            "LDM_Frob": 2.223941,
+            "LDM_RMSD": 0.222394,
+            "LDM_CT": -12.860333,
+            "Q_Frob": 0.483409,
+            "Q_RMSD": 0.050956,
+            "S_hom": 0.191384,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P6": {
+        "x": 2.98058,
+        "y": 3.362683266266671,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -1.004116,
+            "EN": 1.239155,
+            "GEO": 0.764962,
+            "LDM_OffDiag": 0.651673,
+            "LDM_Diag": 1.110893,
+            "LDM_Frob": 1.287929,
+            "LDM_RMSD": 0.257586,
+            "LDM_CT": -14.789667,
+            "Q_Frob": 0.403224,
+            "Q_RMSD": 0.090164,
+            "S_hom": 0.384334,
+            "NICS_iso": -4.06,
+            "NICS_zz_g": -5.79,
+            "NICS_zz_l": -10.17
+          },
+          "_global": {
+            "HOMA_TOTAL": -2.602275,
+            "Q_G": 0.071355,
+            "S_hom_G": 0.133097,
+            "S_G": 0.168028
+          },
+          "periph5": {
+            "HOMA": -6.716233,
+            "EN": 6.561901,
+            "GEO": 1.154332,
+            "LDM_OffDiag": 0.739447,
+            "LDM_Diag": 1.21459,
+            "LDM_Frob": 1.421974,
+            "LDM_RMSD": 0.284395,
+            "LDM_CT": -19.71,
+            "Q_Frob": 0.418344,
+            "Q_RMSD": 0.093544,
+            "S_hom": 0.379513,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -5.135903,
+            "EN": 3.680753,
+            "GEO": 2.45515,
+            "LDM_OffDiag": 0.688952,
+            "LDM_Diag": 1.488208,
+            "LDM_Frob": 1.639945,
+            "LDM_RMSD": 0.273324,
+            "LDM_CT": -15.985278,
+            "Q_Frob": 0.41129,
+            "Q_RMSD": 0.075091,
+            "S_hom": 0.302156,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.280132,
+            "EN": 0.507306,
+            "GEO": 0.772826,
+            "LDM_OffDiag": 0.588723,
+            "LDM_Diag": 1.74115,
+            "LDM_Frob": 1.837987,
+            "LDM_RMSD": 0.306331,
+            "LDM_CT": -15.508056,
+            "Q_Frob": 0.329549,
+            "Q_RMSD": 0.060167,
+            "S_hom": 0.325171,
+            "NICS_iso": -1.72,
+            "NICS_zz_g": 1.68,
+            "NICS_zz_l": -6.68
+          },
+          "periph9": {
+            "HOMA": -3.34915,
+            "EN": 2.1865,
+            "GEO": 2.162649,
+            "LDM_OffDiag": 0.677296,
+            "LDM_Diag": 1.899515,
+            "LDM_Frob": 2.016652,
+            "LDM_RMSD": 0.224072,
+            "LDM_CT": -14.824074,
+            "Q_Frob": 0.391651,
+            "Q_RMSD": 0.046156,
+            "S_hom": 0.202242,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -2.73766,
+            "EN": 1.442691,
+            "GEO": 2.294969,
+            "LDM_OffDiag": 0.784601,
+            "LDM_Diag": 2.098146,
+            "LDM_Frob": 2.240048,
+            "LDM_RMSD": 0.224005,
+            "LDM_CT": -12.942167,
+            "Q_Frob": 0.504061,
+            "Q_RMSD": 0.053133,
+            "S_hom": 0.189482,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "Produit": {
+        "x": 4.5758600000000005,
+        "y": -2.2102327297117625,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -1.311634,
+            "EN": 1.437972,
+            "GEO": 0.873662,
+            "LDM_OffDiag": 0.6768,
+            "LDM_Diag": 1.119342,
+            "LDM_Frob": 1.308046,
+            "LDM_RMSD": 0.261609,
+            "LDM_CT": -14.989333,
+            "Q_Frob": 0.421304,
+            "Q_RMSD": 0.094207,
+            "S_hom": 0.379853,
+            "NICS_iso": -3.91,
+            "NICS_zz_g": -5.64,
+            "NICS_zz_l": -9.08
+          },
+          "_global": {
+            "HOMA_TOTAL": -1.552211,
+            "Q_G": 0.07165,
+            "S_hom_G": 0.132067,
+            "S_G": 0.167345
+          },
+          "periph5": {
+            "HOMA": -3.708977,
+            "EN": 4.592386,
+            "GEO": 0.116591,
+            "LDM_OffDiag": 0.714663,
+            "LDM_Diag": 1.244238,
+            "LDM_Frob": 1.434877,
+            "LDM_RMSD": 0.286975,
+            "LDM_CT": -19.693333,
+            "Q_Frob": 0.413998,
+            "Q_RMSD": 0.092573,
+            "S_hom": 0.38189,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -2.717356,
+            "EN": 2.536385,
+            "GEO": 1.180971,
+            "LDM_OffDiag": 0.687993,
+            "LDM_Diag": 1.515197,
+            "LDM_Frob": 1.664078,
+            "LDM_RMSD": 0.277346,
+            "LDM_CT": -16.024722,
+            "Q_Frob": 0.419908,
+            "Q_RMSD": 0.076664,
+            "S_hom": 0.297611,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.491257,
+            "EN": 0.578075,
+            "GEO": 0.913182,
+            "LDM_OffDiag": 0.602685,
+            "LDM_Diag": 1.752656,
+            "LDM_Frob": 1.853384,
+            "LDM_RMSD": 0.308897,
+            "LDM_CT": -15.7425,
+            "Q_Frob": 0.340285,
+            "Q_RMSD": 0.062127,
+            "S_hom": 0.321334,
+            "NICS_iso": -1.62,
+            "NICS_zz_g": 1.61,
+            "NICS_zz_l": -6.31
+          },
+          "periph9": {
+            "HOMA": -1.616403,
+            "EN": 1.506672,
+            "GEO": 1.109731,
+            "LDM_OffDiag": 0.666927,
+            "LDM_Diag": 1.918069,
+            "LDM_Frob": 2.030709,
+            "LDM_RMSD": 0.225634,
+            "LDM_CT": -14.859074,
+            "Q_Frob": 0.391826,
+            "Q_RMSD": 0.046177,
+            "S_hom": 0.201268,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -1.230688,
+            "EN": 0.977703,
+            "GEO": 1.252985,
+            "LDM_OffDiag": 0.789799,
+            "LDM_Diag": 2.115446,
+            "LDM_Frob": 2.258073,
+            "LDM_RMSD": 0.225807,
+            "LDM_CT": -13.002667,
+            "Q_Frob": 0.515194,
+            "Q_RMSD": 0.054306,
+            "S_hom": 0.187588,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      }
+    },
+    "stereo_offset_kcal": 0.0,
+    "barrier_kcal": 29.64659344978404,
+    "delta_E_kcal": -2.2102327297117625
+  },
+  "exo": {
+    "pes_irc": [
+      {
+        "x": -5.30938,
+        "y": 0.0
+      },
+      {
+        "x": -4.99733,
+        "y": 0.9118854725238196
+      },
+      {
+        "x": -4.68503,
+        "y": 1.9493424934284977
+      },
+      {
+        "x": -4.37274,
+        "y": 3.1283982821996252
+      },
+      {
+        "x": -4.06041,
+        "y": 4.454414279727828
+      },
+      {
+        "x": -3.74808,
+        "y": 5.928343672882754
+      },
+      {
+        "x": -3.43574,
+        "y": 7.559466071865838
+      },
+      {
+        "x": -3.12339,
+        "y": 9.35235915831912
+      },
+      {
+        "x": -2.81106,
+        "y": 11.313029452756505
+      },
+      {
+        "x": -2.49873,
+        "y": 13.443718419142382
+      },
+      {
+        "x": -2.1864,
+        "y": 15.720479040921388
+      },
+      {
+        "x": -1.87408,
+        "y": 18.101150211477126
+      },
+      {
+        "x": -1.56175,
+        "y": 20.524103597981085
+      },
+      {
+        "x": -1.24942,
+        "y": 22.89161903242811
+      },
+      {
+        "x": -0.93708,
+        "y": 25.054042407913546
+      },
+      {
+        "x": -0.62475,
+        "y": 26.823647990214027
+      },
+      {
+        "x": -0.31244,
+        "y": 28.016765638751295
+      },
+      {
+        "x": 0.0,
+        "y": 28.448700490040505
+      },
+      {
+        "x": 0.31244,
+        "y": 27.99379628196161
+      },
+      {
+        "x": 0.62477,
+        "y": 26.637322857092155
+      },
+      {
+        "x": 0.93712,
+        "y": 24.448439289575912
+      },
+      {
+        "x": 1.24947,
+        "y": 21.567216361746304
+      },
+      {
+        "x": 1.56182,
+        "y": 18.181671599713905
+      },
+      {
+        "x": 1.87416,
+        "y": 14.504527577634217
+      },
+      {
+        "x": 2.18648,
+        "y": 10.74486605967388
+      },
+      {
+        "x": 2.49878,
+        "y": 7.1174534184186555
+      },
+      {
+        "x": 2.81103,
+        "y": 3.834642624928844
+      },
+      {
+        "x": 3.12316,
+        "y": 1.112265562809273
+      },
+      {
+        "x": 3.43478,
+        "y": -0.8392819989196404
+      }
+    ],
+    "extrap_left": [
+      {
+        "x": -6.30938,
+        "y": 0.0
+      },
+      {
+        "x": -5.30938,
+        "y": 0.0
+      }
+    ],
+    "extrap_right": [
+      {
+        "x": 3.43478,
+        "y": -0.8392819989196404
+      },
+      {
+        "x": 4.43478,
+        "y": -0.8392819989196404
+      }
+    ],
+    "pes_irc_abs": [
+      {
+        "x": -5.30938,
+        "y": -0.4253848158294265
+      },
+      {
+        "x": -4.99733,
+        "y": 0.4865006566943931
+      },
+      {
+        "x": -4.68503,
+        "y": 1.5239576775990713
+      },
+      {
+        "x": -4.37274,
+        "y": 2.703013466370199
+      },
+      {
+        "x": -4.06041,
+        "y": 4.029029463898402
+      },
+      {
+        "x": -3.74808,
+        "y": 5.502958857053327
+      },
+      {
+        "x": -3.43574,
+        "y": 7.134081256036412
+      },
+      {
+        "x": -3.12339,
+        "y": 8.926974342489693
+      },
+      {
+        "x": -2.81106,
+        "y": 10.887644636927078
+      },
+      {
+        "x": -2.49873,
+        "y": 13.018333603312955
+      },
+      {
+        "x": -2.1864,
+        "y": 15.295094225091962
+      },
+      {
+        "x": -1.87408,
+        "y": 17.675765395647698
+      },
+      {
+        "x": -1.56175,
+        "y": 20.098718782151657
+      },
+      {
+        "x": -1.24942,
+        "y": 22.466234216598682
+      },
+      {
+        "x": -0.93708,
+        "y": 24.628657592084117
+      },
+      {
+        "x": -0.62475,
+        "y": 26.3982631743846
+      },
+      {
+        "x": -0.31244,
+        "y": 27.591380822921867
+      },
+      {
+        "x": 0.0,
+        "y": 28.023315674211076
+      },
+      {
+        "x": 0.31244,
+        "y": 27.568411466132183
+      },
+      {
+        "x": 0.62477,
+        "y": 26.211938041262727
+      },
+      {
+        "x": 0.93712,
+        "y": 24.023054473746484
+      },
+      {
+        "x": 1.24947,
+        "y": 21.141831545916876
+      },
+      {
+        "x": 1.56182,
+        "y": 17.756286783884477
+      },
+      {
+        "x": 1.87416,
+        "y": 14.07914276180479
+      },
+      {
+        "x": 2.18648,
+        "y": 10.319481243844454
+      },
+      {
+        "x": 2.49878,
+        "y": 6.692068602589229
+      },
+      {
+        "x": 2.81103,
+        "y": 3.4092578090994174
+      },
+      {
+        "x": 3.12316,
+        "y": 0.6868807469798466
+      },
+      {
+        "x": 3.43478,
+        "y": -1.264666814749067
+      }
+    ],
+    "extrap_left_abs": [
+      {
+        "x": -6.30938,
+        "y": -0.4253848158294265
+      },
+      {
+        "x": -5.30938,
+        "y": -0.4253848158294265
+      }
+    ],
+    "extrap_right_abs": [
+      {
+        "x": 3.43478,
+        "y": -1.264666814749067
+      },
+      {
+        "x": 4.43478,
+        "y": -1.264666814749067
+      }
+    ],
+    "stationary": {
+      "Reactif": {
+        "x": -6.30938,
+        "y": 0.0,
+        "role": "reactant (opt)"
+      },
+      "TS": {
+        "x": 0.0,
+        "y": 28.448700490040505,
+        "role": "transition state"
+      },
+      "Produit": {
+        "x": 4.43478,
+        "y": -0.8392819989196404,
+        "role": "product (opt)"
+      }
+    },
+    "arox": {
+      "Reactif": {
+        "x": -6.30938,
+        "y": 0.0,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.058136,
+            "EN": 0.241841,
+            "GEO": 0.700023,
+            "LDM_OffDiag": 0.587725,
+            "LDM_Diag": 0.997105,
+            "LDM_Frob": 1.157428,
+            "LDM_RMSD": 0.231486,
+            "LDM_CT": -10.924,
+            "Q_Frob": 0.372682,
+            "Q_RMSD": 0.083334,
+            "S_hom": 0.428145,
+            "NICS_iso": -3.96,
+            "NICS_zz_g": -0.96,
+            "NICS_zz_l": -14.5
+          },
+          "_global": {
+            "HOMA_TOTAL": -94.682105,
+            "Q_G": 0.073333,
+            "S_hom_G": 0.13091,
+            "S_G": 0.16205
+          },
+          "periph5": {
+            "HOMA": -247.498726,
+            "EN": 109.27984,
+            "GEO": 139.218886,
+            "LDM_OffDiag": 1.379975,
+            "LDM_Diag": 1.048235,
+            "LDM_Frob": 1.732953,
+            "LDM_RMSD": 0.346591,
+            "LDM_CT": -21.997,
+            "Q_Frob": 0.447424,
+            "Q_RMSD": 0.100047,
+            "S_hom": 0.161317,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -205.726454,
+            "EN": 68.048951,
+            "GEO": 138.677504,
+            "LDM_OffDiag": 1.334529,
+            "LDM_Diag": 1.348547,
+            "LDM_Frob": 1.897247,
+            "LDM_RMSD": 0.316208,
+            "LDM_CT": -16.469722,
+            "Q_Frob": 0.537968,
+            "Q_RMSD": 0.098219,
+            "S_hom": 0.185595,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983311,
+            "EN": 0.002125,
+            "GEO": 0.014564,
+            "LDM_OffDiag": 0.468525,
+            "LDM_Diag": 1.703427,
+            "LDM_Frob": 1.766686,
+            "LDM_RMSD": 0.294448,
+            "LDM_CT": -12.408056,
+            "Q_Frob": 0.254092,
+            "Q_RMSD": 0.046391,
+            "S_hom": 0.405127,
+            "NICS_iso": -6.03,
+            "NICS_zz_g": -0.16,
+            "NICS_zz_l": -19.34
+          },
+          "periph9": {
+            "HOMA": -137.06295,
+            "EN": 34.389576,
+            "GEO": 103.673374,
+            "LDM_OffDiag": 1.247866,
+            "LDM_Diag": 1.795264,
+            "LDM_Frob": 2.186354,
+            "LDM_RMSD": 0.242928,
+            "LDM_CT": -15.237593,
+            "Q_Frob": 0.437591,
+            "Q_RMSD": 0.051571,
+            "S_hom": 0.138306,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -123.043164,
+            "EN": 25.004938,
+            "GEO": 99.038227,
+            "LDM_OffDiag": 1.35405,
+            "LDM_Diag": 2.008273,
+            "LDM_Frob": 2.422109,
+            "LDM_RMSD": 0.242211,
+            "LDM_CT": -12.613167,
+            "Q_Frob": 0.615513,
+            "Q_RMSD": 0.064881,
+            "S_hom": 0.139741,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "TS": {
+        "x": 0.0,
+        "y": 29.24485485112487,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.230922,
+            "EN": 0.404766,
+            "GEO": 0.364312,
+            "LDM_OffDiag": 0.467628,
+            "LDM_Diag": 1.052751,
+            "LDM_Frob": 1.151938,
+            "LDM_RMSD": 0.230388,
+            "LDM_CT": -13.025,
+            "Q_Frob": 0.259047,
+            "Q_RMSD": 0.057925,
+            "S_hom": 0.42484,
+            "NICS_iso": -5.93,
+            "NICS_zz_g": -2.21,
+            "NICS_zz_l": -19.11
+          },
+          "_global": {
+            "HOMA_TOTAL": -45.722038,
+            "Q_G": 0.071642,
+            "S_hom_G": 0.132007,
+            "S_G": 0.168971
+          },
+          "periph5": {
+            "HOMA": -120.266239,
+            "EN": 57.904411,
+            "GEO": 63.361828,
+            "LDM_OffDiag": 1.337361,
+            "LDM_Diag": 1.109961,
+            "LDM_Frob": 1.737972,
+            "LDM_RMSD": 0.347594,
+            "LDM_CT": -20.593,
+            "Q_Frob": 0.51413,
+            "Q_RMSD": 0.114963,
+            "S_hom": 0.205237,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -99.448225,
+            "EN": 35.519622,
+            "GEO": 64.928603,
+            "LDM_OffDiag": 1.227673,
+            "LDM_Diag": 1.399211,
+            "LDM_Frob": 1.861443,
+            "LDM_RMSD": 0.310241,
+            "LDM_CT": -16.046111,
+            "Q_Frob": 0.470398,
+            "Q_RMSD": 0.085883,
+            "S_hom": 0.213329,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.775385,
+            "EN": 0.091604,
+            "GEO": 0.13301,
+            "LDM_OffDiag": 0.473552,
+            "LDM_Diag": 1.722373,
+            "LDM_Frob": 1.786287,
+            "LDM_RMSD": 0.297714,
+            "LDM_CT": -14.114444,
+            "Q_Frob": 0.235337,
+            "Q_RMSD": 0.042966,
+            "S_hom": 0.36562,
+            "NICS_iso": -4.35,
+            "NICS_zz_g": 2.2,
+            "NICS_zz_l": -15.56
+          },
+          "periph9": {
+            "HOMA": -66.432284,
+            "EN": 18.402003,
+            "GEO": 49.030281,
+            "LDM_OffDiag": 1.236226,
+            "LDM_Diag": 1.83955,
+            "LDM_Frob": 2.216348,
+            "LDM_RMSD": 0.246261,
+            "LDM_CT": -14.928704,
+            "Q_Frob": 0.489277,
+            "Q_RMSD": 0.057662,
+            "S_hom": 0.146425,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -59.324871,
+            "EN": 13.190938,
+            "GEO": 47.133934,
+            "LDM_OffDiag": 1.249882,
+            "LDM_Diag": 2.0465,
+            "LDM_Frob": 2.397992,
+            "LDM_RMSD": 0.239799,
+            "LDM_CT": -12.692667,
+            "Q_Frob": 0.533253,
+            "Q_RMSD": 0.05621,
+            "S_hom": 0.149099,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "Produit": {
+        "x": 4.43478,
+        "y": -1.0846164929162405,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -1.279186,
+            "EN": 1.413246,
+            "GEO": 0.86594,
+            "LDM_OffDiag": 0.678274,
+            "LDM_Diag": 1.112688,
+            "LDM_Frob": 1.303124,
+            "LDM_RMSD": 0.260625,
+            "LDM_CT": -14.880333,
+            "Q_Frob": 0.423097,
+            "Q_RMSD": 0.094607,
+            "S_hom": 0.37999,
+            "NICS_iso": -3.8,
+            "NICS_zz_g": -6.94,
+            "NICS_zz_l": -8.68
+          },
+          "_global": {
+            "HOMA_TOTAL": -24.475385,
+            "Q_G": 0.071606,
+            "S_hom_G": 0.131492,
+            "S_G": 0.166749
+          },
+          "periph5": {
+            "HOMA": -70.989183,
+            "EN": 41.309532,
+            "GEO": 30.67965,
+            "LDM_OffDiag": 1.425061,
+            "LDM_Diag": 1.236792,
+            "LDM_Frob": 1.886917,
+            "LDM_RMSD": 0.377383,
+            "LDM_CT": -19.648667,
+            "Q_Frob": 0.650313,
+            "Q_RMSD": 0.145414,
+            "S_hom": 0.214367,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -58.773513,
+            "EN": 26.61303,
+            "GEO": 33.160483,
+            "LDM_OffDiag": 1.312719,
+            "LDM_Diag": 1.505348,
+            "LDM_Frob": 1.997324,
+            "LDM_RMSD": 0.332887,
+            "LDM_CT": -15.895278,
+            "Q_Frob": 0.623187,
+            "Q_RMSD": 0.113778,
+            "S_hom": 0.204735,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.550215,
+            "EN": 0.607166,
+            "GEO": 0.943049,
+            "LDM_OffDiag": 0.602832,
+            "LDM_Diag": 1.740583,
+            "LDM_Frob": 1.842019,
+            "LDM_RMSD": 0.307003,
+            "LDM_CT": -15.664167,
+            "Q_Frob": 0.340121,
+            "Q_RMSD": 0.062097,
+            "S_hom": 0.321384,
+            "NICS_iso": -1.43,
+            "NICS_zz_g": 1.77,
+            "NICS_zz_l": -6
+          },
+          "periph9": {
+            "HOMA": -1.609966,
+            "EN": 1.514369,
+            "GEO": 1.095598,
+            "LDM_OffDiag": 0.665589,
+            "LDM_Diag": 1.907616,
+            "LDM_Frob": 2.020398,
+            "LDM_RMSD": 0.224489,
+            "LDM_CT": -14.773704,
+            "Q_Frob": 0.39325,
+            "Q_RMSD": 0.046345,
+            "S_hom": 0.201422,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -1.218486,
+            "EN": 0.97848,
+            "GEO": 1.240006,
+            "LDM_OffDiag": 0.797017,
+            "LDM_Diag": 2.103156,
+            "LDM_Frob": 2.249111,
+            "LDM_RMSD": 0.224911,
+            "LDM_CT": -13.0015,
+            "Q_Frob": 0.5166,
+            "Q_RMSD": 0.054454,
+            "S_hom": 0.185998,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P1": {
+        "x": -4.68503,
+        "y": 1.7046406504935485,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.067083,
+            "EN": 0.23927,
+            "GEO": 0.693647,
+            "LDM_OffDiag": 0.583093,
+            "LDM_Diag": 0.99818,
+            "LDM_Frob": 1.156011,
+            "LDM_RMSD": 0.231202,
+            "LDM_CT": -10.975,
+            "Q_Frob": 0.368647,
+            "Q_RMSD": 0.082432,
+            "S_hom": 0.427983,
+            "NICS_iso": -4.02,
+            "NICS_zz_g": -0.91,
+            "NICS_zz_l": -14.68
+          },
+          "_global": {
+            "HOMA_TOTAL": -88.741539,
+            "Q_G": 0.073327,
+            "S_hom_G": 0.131086,
+            "S_G": 0.162356
+          },
+          "periph5": {
+            "HOMA": -232.060371,
+            "EN": 102.740904,
+            "GEO": 130.319468,
+            "LDM_OffDiag": 1.377101,
+            "LDM_Diag": 1.051755,
+            "LDM_Frob": 1.7328,
+            "LDM_RMSD": 0.34656,
+            "LDM_CT": -21.967667,
+            "Q_Frob": 0.45347,
+            "Q_RMSD": 0.101399,
+            "S_hom": 0.163506,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -192.857699,
+            "EN": 63.742221,
+            "GEO": 130.115478,
+            "LDM_OffDiag": 1.329152,
+            "LDM_Diag": 1.352083,
+            "LDM_Frob": 1.895989,
+            "LDM_RMSD": 0.315998,
+            "LDM_CT": -16.468056,
+            "Q_Frob": 0.537691,
+            "Q_RMSD": 0.098169,
+            "S_hom": 0.186978,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983495,
+            "EN": 0.001947,
+            "GEO": 0.014557,
+            "LDM_OffDiag": 0.467245,
+            "LDM_Diag": 1.702672,
+            "LDM_Frob": 1.765618,
+            "LDM_RMSD": 0.29427,
+            "LDM_CT": -12.440556,
+            "Q_Frob": 0.25248,
+            "Q_RMSD": 0.046096,
+            "S_hom": 0.404683,
+            "NICS_iso": -6.06,
+            "NICS_zz_g": 0,
+            "NICS_zz_l": -19.41
+          },
+          "periph9": {
+            "HOMA": -128.485578,
+            "EN": 32.354709,
+            "GEO": 97.130869,
+            "LDM_OffDiag": 1.245088,
+            "LDM_Diag": 1.794671,
+            "LDM_Frob": 2.184282,
+            "LDM_RMSD": 0.242698,
+            "LDM_CT": -15.210926,
+            "Q_Frob": 0.441115,
+            "Q_RMSD": 0.051986,
+            "S_hom": 0.138976,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -115.321454,
+            "EN": 23.440821,
+            "GEO": 92.880633,
+            "LDM_OffDiag": 1.348408,
+            "LDM_Diag": 2.007923,
+            "LDM_Frob": 2.418669,
+            "LDM_RMSD": 0.241867,
+            "LDM_CT": -12.600833,
+            "Q_Frob": 0.613863,
+            "Q_RMSD": 0.064707,
+            "S_hom": 0.140304,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P2": {
+        "x": -3.12339,
+        "y": 10.148347205595385,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.139037,
+            "EN": 0.235438,
+            "GEO": 0.625525,
+            "LDM_OffDiag": 0.555418,
+            "LDM_Diag": 1.010813,
+            "LDM_Frob": 1.153356,
+            "LDM_RMSD": 0.230671,
+            "LDM_CT": -11.291333,
+            "Q_Frob": 0.344315,
+            "Q_RMSD": 0.076991,
+            "S_hom": 0.427717,
+            "NICS_iso": -4.34,
+            "NICS_zz_g": -0.84,
+            "NICS_zz_l": -15.67
+          },
+          "_global": {
+            "HOMA_TOTAL": -71.335912,
+            "Q_G": 0.073139,
+            "S_hom_G": 0.131771,
+            "S_G": 0.163683
+          },
+          "periph5": {
+            "HOMA": -186.867694,
+            "EN": 83.779214,
+            "GEO": 104.08848,
+            "LDM_OffDiag": 1.363247,
+            "LDM_Diag": 1.063216,
+            "LDM_Frob": 1.728835,
+            "LDM_RMSD": 0.345767,
+            "LDM_CT": -21.779333,
+            "Q_Frob": 0.472051,
+            "Q_RMSD": 0.105554,
+            "S_hom": 0.173458,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -155.153656,
+            "EN": 51.376603,
+            "GEO": 104.777053,
+            "LDM_OffDiag": 1.300837,
+            "LDM_Diag": 1.368017,
+            "LDM_Frob": 1.887763,
+            "LDM_RMSD": 0.314627,
+            "LDM_CT": -16.4575,
+            "Q_Frob": 0.526053,
+            "Q_RMSD": 0.096044,
+            "S_hom": 0.193274,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.984979,
+            "EN": 0.002911,
+            "GEO": 0.01211,
+            "LDM_OffDiag": 0.461237,
+            "LDM_Diag": 1.711038,
+            "LDM_Frob": 1.772115,
+            "LDM_RMSD": 0.295352,
+            "LDM_CT": -12.6925,
+            "Q_Frob": 0.243649,
+            "Q_RMSD": 0.044484,
+            "S_hom": 0.401598,
+            "NICS_iso": -6.08,
+            "NICS_zz_g": 0.56,
+            "NICS_zz_l": -19.52
+          },
+          "periph9": {
+            "HOMA": -103.379649,
+            "EN": 26.399718,
+            "GEO": 77.979931,
+            "LDM_OffDiag": 1.232478,
+            "LDM_Diag": 1.804877,
+            "LDM_Frob": 2.18554,
+            "LDM_RMSD": 0.242838,
+            "LDM_CT": -15.16463,
+            "Q_Frob": 0.450403,
+            "Q_RMSD": 0.053081,
+            "S_hom": 0.141339,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -92.70003,
+            "EN": 18.908219,
+            "GEO": 74.791812,
+            "LDM_OffDiag": 1.319022,
+            "LDM_Diag": 2.02138,
+            "LDM_Frob": 2.413669,
+            "LDM_RMSD": 0.241367,
+            "LDM_CT": -12.630333,
+            "Q_Frob": 0.597147,
+            "Q_RMSD": 0.062945,
+            "S_hom": 0.142779,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P3": {
+        "x": -1.24942,
+        "y": 23.685306048707016,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.261502,
+            "EN": 0.27199,
+            "GEO": 0.466508,
+            "LDM_OffDiag": 0.491523,
+            "LDM_Diag": 1.03374,
+            "LDM_Frob": 1.144645,
+            "LDM_RMSD": 0.228929,
+            "LDM_CT": -12.052,
+            "Q_Frob": 0.28545,
+            "Q_RMSD": 0.063829,
+            "S_hom": 0.428693,
+            "NICS_iso": -5.2,
+            "NICS_zz_g": -1.1,
+            "NICS_zz_l": -17.95
+          },
+          "_global": {
+            "HOMA_TOTAL": -54.888475,
+            "Q_G": 0.072462,
+            "S_hom_G": 0.13296,
+            "S_G": 0.166543
+          },
+          "periph5": {
+            "HOMA": -144.203499,
+            "EN": 66.589651,
+            "GEO": 78.613848,
+            "LDM_OffDiag": 1.338604,
+            "LDM_Diag": 1.088328,
+            "LDM_Frob": 1.725201,
+            "LDM_RMSD": 0.34504,
+            "LDM_CT": -21.311667,
+            "Q_Frob": 0.490488,
+            "Q_RMSD": 0.109677,
+            "S_hom": 0.190293,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -119.468754,
+            "EN": 40.443067,
+            "GEO": 80.025687,
+            "LDM_OffDiag": 1.242876,
+            "LDM_Diag": 1.386683,
+            "LDM_Frob": 1.862158,
+            "LDM_RMSD": 0.31036,
+            "LDM_CT": -16.296111,
+            "Q_Frob": 0.483236,
+            "Q_RMSD": 0.088226,
+            "S_hom": 0.204568,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.946433,
+            "EN": 0.022261,
+            "GEO": 0.031306,
+            "LDM_OffDiag": 0.45331,
+            "LDM_Diag": 1.717361,
+            "LDM_Frob": 1.776181,
+            "LDM_RMSD": 0.29603,
+            "LDM_CT": -13.298611,
+            "Q_Frob": 0.226672,
+            "Q_RMSD": 0.041385,
+            "S_hom": 0.389849,
+            "NICS_iso": -5.57,
+            "NICS_zz_g": 1.51,
+            "NICS_zz_l": -18.63
+          },
+          "periph9": {
+            "HOMA": -79.697104,
+            "EN": 21.094638,
+            "GEO": 59.602467,
+            "LDM_OffDiag": 1.21513,
+            "LDM_Diag": 1.822805,
+            "LDM_Frob": 2.190698,
+            "LDM_RMSD": 0.243411,
+            "LDM_CT": -15.086296,
+            "Q_Frob": 0.458558,
+            "Q_RMSD": 0.054042,
+            "S_hom": 0.144215,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -71.306897,
+            "EN": 14.970466,
+            "GEO": 57.336431,
+            "LDM_OffDiag": 1.259997,
+            "LDM_Diag": 2.03559,
+            "LDM_Frob": 2.393996,
+            "LDM_RMSD": 0.2394,
+            "LDM_CT": -12.649833,
+            "Q_Frob": 0.547518,
+            "Q_RMSD": 0.057713,
+            "S_hom": 0.147283,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P4": {
+        "x": 0.93712,
+        "y": 25.24176574175319,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.013613,
+            "EN": 0.596996,
+            "GEO": 0.416617,
+            "LDM_OffDiag": 0.525004,
+            "LDM_Diag": 1.070326,
+            "LDM_Frob": 1.192152,
+            "LDM_RMSD": 0.23843,
+            "LDM_CT": -13.772,
+            "Q_Frob": 0.305798,
+            "Q_RMSD": 0.068378,
+            "S_hom": 0.408431,
+            "NICS_iso": -5.59,
+            "NICS_zz_g": -3.62,
+            "NICS_zz_l": -16.96
+          },
+          "_global": {
+            "HOMA_TOTAL": -39.971099,
+            "Q_G": 0.071239,
+            "S_hom_G": 0.13167,
+            "S_G": 0.169325
+          },
+          "periph5": {
+            "HOMA": -104.981941,
+            "EN": 52.778968,
+            "GEO": 53.202974,
+            "LDM_OffDiag": 1.431382,
+            "LDM_Diag": 1.137068,
+            "LDM_Frob": 1.828053,
+            "LDM_RMSD": 0.365611,
+            "LDM_CT": -20.096667,
+            "Q_Frob": 0.595482,
+            "Q_RMSD": 0.133154,
+            "S_hom": 0.212739,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -86.76075,
+            "EN": 32.85573,
+            "GEO": 54.90502,
+            "LDM_OffDiag": 1.299912,
+            "LDM_Diag": 1.419113,
+            "LDM_Frob": 1.924488,
+            "LDM_RMSD": 0.320748,
+            "LDM_CT": -15.918333,
+            "Q_Frob": 0.54093,
+            "Q_RMSD": 0.09876,
+            "S_hom": 0.214121,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.505829,
+            "EN": 0.196069,
+            "GEO": 0.298101,
+            "LDM_OffDiag": 0.514583,
+            "LDM_Diag": 1.724906,
+            "LDM_Frob": 1.800027,
+            "LDM_RMSD": 0.300004,
+            "LDM_CT": -14.725833,
+            "Q_Frob": 0.268324,
+            "Q_RMSD": 0.048989,
+            "S_hom": 0.345644,
+            "NICS_iso": -3.1,
+            "NICS_zz_g": 2.24,
+            "NICS_zz_l": -11.76
+          },
+          "periph9": {
+            "HOMA": -57.96122,
+            "EN": 16.784901,
+            "GEO": 42.176319,
+            "LDM_OffDiag": 1.29996,
+            "LDM_Diag": 1.855541,
+            "LDM_Frob": 2.265597,
+            "LDM_RMSD": 0.251733,
+            "LDM_CT": -14.818704,
+            "Q_Frob": 0.550441,
+            "Q_RMSD": 0.06487,
+            "S_hom": 0.147134,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -51.730578,
+            "EN": 12.207914,
+            "GEO": 40.522664,
+            "LDM_OffDiag": 1.305772,
+            "LDM_Diag": 2.058215,
+            "LDM_Frob": 2.437476,
+            "LDM_RMSD": 0.243748,
+            "LDM_CT": -12.7815,
+            "Q_Frob": 0.589608,
+            "Q_RMSD": 0.06215,
+            "S_hom": 0.147194,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P5": {
+        "x": 1.87416,
+        "y": 15.293371236218608,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.42782,
+            "EN": 0.866737,
+            "GEO": 0.561083,
+            "LDM_OffDiag": 0.596541,
+            "LDM_Diag": 1.08451,
+            "LDM_Frob": 1.237749,
+            "LDM_RMSD": 0.24755,
+            "LDM_CT": -14.275333,
+            "Q_Frob": 0.362329,
+            "Q_RMSD": 0.081019,
+            "S_hom": 0.393622,
+            "NICS_iso": -4.77,
+            "NICS_zz_g": -4.99,
+            "NICS_zz_l": -13.42
+          },
+          "_global": {
+            "HOMA_TOTAL": -34.445264,
+            "Q_G": 0.071152,
+            "S_hom_G": 0.134063,
+            "S_G": 0.168585
+          },
+          "periph5": {
+            "HOMA": -91.536772,
+            "EN": 48.402112,
+            "GEO": 44.13466,
+            "LDM_OffDiag": 1.467142,
+            "LDM_Diag": 1.16851,
+            "LDM_Frob": 1.875612,
+            "LDM_RMSD": 0.375122,
+            "LDM_CT": -19.802333,
+            "Q_Frob": 0.639158,
+            "Q_RMSD": 0.14292,
+            "S_hom": 0.215388,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -75.675154,
+            "EN": 30.60667,
+            "GEO": 46.068484,
+            "LDM_OffDiag": 1.31977,
+            "LDM_Diag": 1.442561,
+            "LDM_Frob": 1.955192,
+            "LDM_RMSD": 0.325865,
+            "LDM_CT": -15.847778,
+            "Q_Frob": 0.584797,
+            "Q_RMSD": 0.106769,
+            "S_hom": 0.211062,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.137082,
+            "EN": 0.341723,
+            "GEO": 0.521195,
+            "LDM_OffDiag": 0.555145,
+            "LDM_Diag": 1.726529,
+            "LDM_Frob": 1.813585,
+            "LDM_RMSD": 0.302264,
+            "LDM_CT": -15.14,
+            "Q_Frob": 0.302059,
+            "Q_RMSD": 0.055148,
+            "S_hom": 0.332884,
+            "NICS_iso": -2.16,
+            "NICS_zz_g": 2.04,
+            "NICS_zz_l": -8.63
+          },
+          "periph9": {
+            "HOMA": -6.95867,
+            "EN": 3.279514,
+            "GEO": 4.679156,
+            "LDM_OffDiag": 0.702005,
+            "LDM_Diag": 1.870928,
+            "LDM_Frob": 1.998295,
+            "LDM_RMSD": 0.222033,
+            "LDM_CT": -14.757037,
+            "Q_Frob": 0.391087,
+            "Q_RMSD": 0.04609,
+            "S_hom": 0.201817,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -5.89951,
+            "EN": 2.162855,
+            "GEO": 4.736655,
+            "LDM_OffDiag": 0.780365,
+            "LDM_Diag": 2.068853,
+            "LDM_Frob": 2.211136,
+            "LDM_RMSD": 0.221114,
+            "LDM_CT": -12.8575,
+            "Q_Frob": 0.476203,
+            "Q_RMSD": 0.050196,
+            "S_hom": 0.190487,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P6": {
+        "x": 2.81103,
+        "y": 4.628925856081994,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.908334,
+            "EN": 1.177211,
+            "GEO": 0.731124,
+            "LDM_OffDiag": 0.647417,
+            "LDM_Diag": 1.098692,
+            "LDM_Frob": 1.275254,
+            "LDM_RMSD": 0.255051,
+            "LDM_CT": -14.623,
+            "Q_Frob": 0.400658,
+            "Q_RMSD": 0.08959,
+            "S_hom": 0.385259,
+            "NICS_iso": -4.14,
+            "NICS_zz_g": -6.14,
+            "NICS_zz_l": -10.49
+          },
+          "_global": {
+            "HOMA_TOTAL": -28.57365,
+            "Q_G": 0.071299,
+            "S_hom_G": 0.132807,
+            "S_G": 0.167638
+          },
+          "periph5": {
+            "HOMA": -79.887314,
+            "EN": 44.506248,
+            "GEO": 36.381066,
+            "LDM_OffDiag": 1.44006,
+            "LDM_Diag": 1.202945,
+            "LDM_Frob": 1.876393,
+            "LDM_RMSD": 0.375279,
+            "LDM_CT": -19.673667,
+            "Q_Frob": 0.643439,
+            "Q_RMSD": 0.143877,
+            "S_hom": 0.215404,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -66.098838,
+            "EN": 28.507277,
+            "GEO": 38.591561,
+            "LDM_OffDiag": 1.314271,
+            "LDM_Diag": 1.473254,
+            "LDM_Frob": 1.974281,
+            "LDM_RMSD": 0.329047,
+            "LDM_CT": -15.856111,
+            "Q_Frob": 0.607021,
+            "Q_RMSD": 0.110826,
+            "S_hom": 0.207472,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.261331,
+            "EN": 0.503268,
+            "GEO": 0.758063,
+            "LDM_OffDiag": 0.584635,
+            "LDM_Diag": 1.73139,
+            "LDM_Frob": 1.827432,
+            "LDM_RMSD": 0.304572,
+            "LDM_CT": -15.435,
+            "Q_Frob": 0.325824,
+            "Q_RMSD": 0.059487,
+            "S_hom": 0.325741,
+            "NICS_iso": -1.65,
+            "NICS_zz_g": 1.88,
+            "NICS_zz_l": -6.84
+          },
+          "periph9": {
+            "HOMA": -3.556857,
+            "EN": 2.275683,
+            "GEO": 2.281174,
+            "LDM_OffDiag": 0.676002,
+            "LDM_Diag": 1.888082,
+            "LDM_Frob": 2.00545,
+            "LDM_RMSD": 0.222828,
+            "LDM_CT": -14.749444,
+            "Q_Frob": 0.391553,
+            "Q_RMSD": 0.046145,
+            "S_hom": 0.202593,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -2.916817,
+            "EN": 1.50201,
+            "GEO": 2.414807,
+            "LDM_OffDiag": 0.787884,
+            "LDM_Diag": 2.084203,
+            "LDM_Frob": 2.228153,
+            "LDM_RMSD": 0.222815,
+            "LDM_CT": -12.936667,
+            "Q_Frob": 0.501232,
+            "Q_RMSD": 0.052835,
+            "S_hom": 0.188369,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      }
+    },
+    "arox_abs": {
+      "Reactif": {
+        "x": -6.30938,
+        "y": -0.4253848158294265,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.058136,
+            "EN": 0.241841,
+            "GEO": 0.700023,
+            "LDM_OffDiag": 0.587725,
+            "LDM_Diag": 0.997105,
+            "LDM_Frob": 1.157428,
+            "LDM_RMSD": 0.231486,
+            "LDM_CT": -10.924,
+            "Q_Frob": 0.372682,
+            "Q_RMSD": 0.083334,
+            "S_hom": 0.428145,
+            "NICS_iso": -3.96,
+            "NICS_zz_g": -0.96,
+            "NICS_zz_l": -14.5
+          },
+          "_global": {
+            "HOMA_TOTAL": -94.682105,
+            "Q_G": 0.073333,
+            "S_hom_G": 0.13091,
+            "S_G": 0.16205
+          },
+          "periph5": {
+            "HOMA": -247.498726,
+            "EN": 109.27984,
+            "GEO": 139.218886,
+            "LDM_OffDiag": 1.379975,
+            "LDM_Diag": 1.048235,
+            "LDM_Frob": 1.732953,
+            "LDM_RMSD": 0.346591,
+            "LDM_CT": -21.997,
+            "Q_Frob": 0.447424,
+            "Q_RMSD": 0.100047,
+            "S_hom": 0.161317,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -205.726454,
+            "EN": 68.048951,
+            "GEO": 138.677504,
+            "LDM_OffDiag": 1.334529,
+            "LDM_Diag": 1.348547,
+            "LDM_Frob": 1.897247,
+            "LDM_RMSD": 0.316208,
+            "LDM_CT": -16.469722,
+            "Q_Frob": 0.537968,
+            "Q_RMSD": 0.098219,
+            "S_hom": 0.185595,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983311,
+            "EN": 0.002125,
+            "GEO": 0.014564,
+            "LDM_OffDiag": 0.468525,
+            "LDM_Diag": 1.703427,
+            "LDM_Frob": 1.766686,
+            "LDM_RMSD": 0.294448,
+            "LDM_CT": -12.408056,
+            "Q_Frob": 0.254092,
+            "Q_RMSD": 0.046391,
+            "S_hom": 0.405127,
+            "NICS_iso": -6.03,
+            "NICS_zz_g": -0.16,
+            "NICS_zz_l": -19.34
+          },
+          "periph9": {
+            "HOMA": -137.06295,
+            "EN": 34.389576,
+            "GEO": 103.673374,
+            "LDM_OffDiag": 1.247866,
+            "LDM_Diag": 1.795264,
+            "LDM_Frob": 2.186354,
+            "LDM_RMSD": 0.242928,
+            "LDM_CT": -15.237593,
+            "Q_Frob": 0.437591,
+            "Q_RMSD": 0.051571,
+            "S_hom": 0.138306,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -123.043164,
+            "EN": 25.004938,
+            "GEO": 99.038227,
+            "LDM_OffDiag": 1.35405,
+            "LDM_Diag": 2.008273,
+            "LDM_Frob": 2.422109,
+            "LDM_RMSD": 0.242211,
+            "LDM_CT": -12.613167,
+            "Q_Frob": 0.615513,
+            "Q_RMSD": 0.064881,
+            "S_hom": 0.139741,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P1": {
+        "x": -4.68503,
+        "y": 1.279255834664122,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.067083,
+            "EN": 0.23927,
+            "GEO": 0.693647,
+            "LDM_OffDiag": 0.583093,
+            "LDM_Diag": 0.99818,
+            "LDM_Frob": 1.156011,
+            "LDM_RMSD": 0.231202,
+            "LDM_CT": -10.975,
+            "Q_Frob": 0.368647,
+            "Q_RMSD": 0.082432,
+            "S_hom": 0.427983,
+            "NICS_iso": -4.02,
+            "NICS_zz_g": -0.91,
+            "NICS_zz_l": -14.68
+          },
+          "_global": {
+            "HOMA_TOTAL": -88.741539,
+            "Q_G": 0.073327,
+            "S_hom_G": 0.131086,
+            "S_G": 0.162356
+          },
+          "periph5": {
+            "HOMA": -232.060371,
+            "EN": 102.740904,
+            "GEO": 130.319468,
+            "LDM_OffDiag": 1.377101,
+            "LDM_Diag": 1.051755,
+            "LDM_Frob": 1.7328,
+            "LDM_RMSD": 0.34656,
+            "LDM_CT": -21.967667,
+            "Q_Frob": 0.45347,
+            "Q_RMSD": 0.101399,
+            "S_hom": 0.163506,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -192.857699,
+            "EN": 63.742221,
+            "GEO": 130.115478,
+            "LDM_OffDiag": 1.329152,
+            "LDM_Diag": 1.352083,
+            "LDM_Frob": 1.895989,
+            "LDM_RMSD": 0.315998,
+            "LDM_CT": -16.468056,
+            "Q_Frob": 0.537691,
+            "Q_RMSD": 0.098169,
+            "S_hom": 0.186978,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.983495,
+            "EN": 0.001947,
+            "GEO": 0.014557,
+            "LDM_OffDiag": 0.467245,
+            "LDM_Diag": 1.702672,
+            "LDM_Frob": 1.765618,
+            "LDM_RMSD": 0.29427,
+            "LDM_CT": -12.440556,
+            "Q_Frob": 0.25248,
+            "Q_RMSD": 0.046096,
+            "S_hom": 0.404683,
+            "NICS_iso": -6.06,
+            "NICS_zz_g": 0,
+            "NICS_zz_l": -19.41
+          },
+          "periph9": {
+            "HOMA": -128.485578,
+            "EN": 32.354709,
+            "GEO": 97.130869,
+            "LDM_OffDiag": 1.245088,
+            "LDM_Diag": 1.794671,
+            "LDM_Frob": 2.184282,
+            "LDM_RMSD": 0.242698,
+            "LDM_CT": -15.210926,
+            "Q_Frob": 0.441115,
+            "Q_RMSD": 0.051986,
+            "S_hom": 0.138976,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -115.321454,
+            "EN": 23.440821,
+            "GEO": 92.880633,
+            "LDM_OffDiag": 1.348408,
+            "LDM_Diag": 2.007923,
+            "LDM_Frob": 2.418669,
+            "LDM_RMSD": 0.241867,
+            "LDM_CT": -12.600833,
+            "Q_Frob": 0.613863,
+            "Q_RMSD": 0.064707,
+            "S_hom": 0.140304,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P2": {
+        "x": -3.12339,
+        "y": 9.722962389765959,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.139037,
+            "EN": 0.235438,
+            "GEO": 0.625525,
+            "LDM_OffDiag": 0.555418,
+            "LDM_Diag": 1.010813,
+            "LDM_Frob": 1.153356,
+            "LDM_RMSD": 0.230671,
+            "LDM_CT": -11.291333,
+            "Q_Frob": 0.344315,
+            "Q_RMSD": 0.076991,
+            "S_hom": 0.427717,
+            "NICS_iso": -4.34,
+            "NICS_zz_g": -0.84,
+            "NICS_zz_l": -15.67
+          },
+          "_global": {
+            "HOMA_TOTAL": -71.335912,
+            "Q_G": 0.073139,
+            "S_hom_G": 0.131771,
+            "S_G": 0.163683
+          },
+          "periph5": {
+            "HOMA": -186.867694,
+            "EN": 83.779214,
+            "GEO": 104.08848,
+            "LDM_OffDiag": 1.363247,
+            "LDM_Diag": 1.063216,
+            "LDM_Frob": 1.728835,
+            "LDM_RMSD": 0.345767,
+            "LDM_CT": -21.779333,
+            "Q_Frob": 0.472051,
+            "Q_RMSD": 0.105554,
+            "S_hom": 0.173458,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -155.153656,
+            "EN": 51.376603,
+            "GEO": 104.777053,
+            "LDM_OffDiag": 1.300837,
+            "LDM_Diag": 1.368017,
+            "LDM_Frob": 1.887763,
+            "LDM_RMSD": 0.314627,
+            "LDM_CT": -16.4575,
+            "Q_Frob": 0.526053,
+            "Q_RMSD": 0.096044,
+            "S_hom": 0.193274,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.984979,
+            "EN": 0.002911,
+            "GEO": 0.01211,
+            "LDM_OffDiag": 0.461237,
+            "LDM_Diag": 1.711038,
+            "LDM_Frob": 1.772115,
+            "LDM_RMSD": 0.295352,
+            "LDM_CT": -12.6925,
+            "Q_Frob": 0.243649,
+            "Q_RMSD": 0.044484,
+            "S_hom": 0.401598,
+            "NICS_iso": -6.08,
+            "NICS_zz_g": 0.56,
+            "NICS_zz_l": -19.52
+          },
+          "periph9": {
+            "HOMA": -103.379649,
+            "EN": 26.399718,
+            "GEO": 77.979931,
+            "LDM_OffDiag": 1.232478,
+            "LDM_Diag": 1.804877,
+            "LDM_Frob": 2.18554,
+            "LDM_RMSD": 0.242838,
+            "LDM_CT": -15.16463,
+            "Q_Frob": 0.450403,
+            "Q_RMSD": 0.053081,
+            "S_hom": 0.141339,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -92.70003,
+            "EN": 18.908219,
+            "GEO": 74.791812,
+            "LDM_OffDiag": 1.319022,
+            "LDM_Diag": 2.02138,
+            "LDM_Frob": 2.413669,
+            "LDM_RMSD": 0.241367,
+            "LDM_CT": -12.630333,
+            "Q_Frob": 0.597147,
+            "Q_RMSD": 0.062945,
+            "S_hom": 0.142779,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P3": {
+        "x": -1.24942,
+        "y": 23.259921232877588,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.261502,
+            "EN": 0.27199,
+            "GEO": 0.466508,
+            "LDM_OffDiag": 0.491523,
+            "LDM_Diag": 1.03374,
+            "LDM_Frob": 1.144645,
+            "LDM_RMSD": 0.228929,
+            "LDM_CT": -12.052,
+            "Q_Frob": 0.28545,
+            "Q_RMSD": 0.063829,
+            "S_hom": 0.428693,
+            "NICS_iso": -5.2,
+            "NICS_zz_g": -1.1,
+            "NICS_zz_l": -17.95
+          },
+          "_global": {
+            "HOMA_TOTAL": -54.888475,
+            "Q_G": 0.072462,
+            "S_hom_G": 0.13296,
+            "S_G": 0.166543
+          },
+          "periph5": {
+            "HOMA": -144.203499,
+            "EN": 66.589651,
+            "GEO": 78.613848,
+            "LDM_OffDiag": 1.338604,
+            "LDM_Diag": 1.088328,
+            "LDM_Frob": 1.725201,
+            "LDM_RMSD": 0.34504,
+            "LDM_CT": -21.311667,
+            "Q_Frob": 0.490488,
+            "Q_RMSD": 0.109677,
+            "S_hom": 0.190293,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -119.468754,
+            "EN": 40.443067,
+            "GEO": 80.025687,
+            "LDM_OffDiag": 1.242876,
+            "LDM_Diag": 1.386683,
+            "LDM_Frob": 1.862158,
+            "LDM_RMSD": 0.31036,
+            "LDM_CT": -16.296111,
+            "Q_Frob": 0.483236,
+            "Q_RMSD": 0.088226,
+            "S_hom": 0.204568,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.946433,
+            "EN": 0.022261,
+            "GEO": 0.031306,
+            "LDM_OffDiag": 0.45331,
+            "LDM_Diag": 1.717361,
+            "LDM_Frob": 1.776181,
+            "LDM_RMSD": 0.29603,
+            "LDM_CT": -13.298611,
+            "Q_Frob": 0.226672,
+            "Q_RMSD": 0.041385,
+            "S_hom": 0.389849,
+            "NICS_iso": -5.57,
+            "NICS_zz_g": 1.51,
+            "NICS_zz_l": -18.63
+          },
+          "periph9": {
+            "HOMA": -79.697104,
+            "EN": 21.094638,
+            "GEO": 59.602467,
+            "LDM_OffDiag": 1.21513,
+            "LDM_Diag": 1.822805,
+            "LDM_Frob": 2.190698,
+            "LDM_RMSD": 0.243411,
+            "LDM_CT": -15.086296,
+            "Q_Frob": 0.458558,
+            "Q_RMSD": 0.054042,
+            "S_hom": 0.144215,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -71.306897,
+            "EN": 14.970466,
+            "GEO": 57.336431,
+            "LDM_OffDiag": 1.259997,
+            "LDM_Diag": 2.03559,
+            "LDM_Frob": 2.393996,
+            "LDM_RMSD": 0.2394,
+            "LDM_CT": -12.649833,
+            "Q_Frob": 0.547518,
+            "Q_RMSD": 0.057713,
+            "S_hom": 0.147283,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "TS": {
+        "x": 0.0,
+        "y": 28.819470035295442,
+        "desc": {
+          "cyclopent": {
+            "HOMA": 0.230922,
+            "EN": 0.404766,
+            "GEO": 0.364312,
+            "LDM_OffDiag": 0.467628,
+            "LDM_Diag": 1.052751,
+            "LDM_Frob": 1.151938,
+            "LDM_RMSD": 0.230388,
+            "LDM_CT": -13.025,
+            "Q_Frob": 0.259047,
+            "Q_RMSD": 0.057925,
+            "S_hom": 0.42484,
+            "NICS_iso": -5.93,
+            "NICS_zz_g": -2.21,
+            "NICS_zz_l": -19.11
+          },
+          "_global": {
+            "HOMA_TOTAL": -45.722038,
+            "Q_G": 0.071642,
+            "S_hom_G": 0.132007,
+            "S_G": 0.168971
+          },
+          "periph5": {
+            "HOMA": -120.266239,
+            "EN": 57.904411,
+            "GEO": 63.361828,
+            "LDM_OffDiag": 1.337361,
+            "LDM_Diag": 1.109961,
+            "LDM_Frob": 1.737972,
+            "LDM_RMSD": 0.347594,
+            "LDM_CT": -20.593,
+            "Q_Frob": 0.51413,
+            "Q_RMSD": 0.114963,
+            "S_hom": 0.205237,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -99.448225,
+            "EN": 35.519622,
+            "GEO": 64.928603,
+            "LDM_OffDiag": 1.227673,
+            "LDM_Diag": 1.399211,
+            "LDM_Frob": 1.861443,
+            "LDM_RMSD": 0.310241,
+            "LDM_CT": -16.046111,
+            "Q_Frob": 0.470398,
+            "Q_RMSD": 0.085883,
+            "S_hom": 0.213329,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.775385,
+            "EN": 0.091604,
+            "GEO": 0.13301,
+            "LDM_OffDiag": 0.473552,
+            "LDM_Diag": 1.722373,
+            "LDM_Frob": 1.786287,
+            "LDM_RMSD": 0.297714,
+            "LDM_CT": -14.114444,
+            "Q_Frob": 0.235337,
+            "Q_RMSD": 0.042966,
+            "S_hom": 0.36562,
+            "NICS_iso": -4.35,
+            "NICS_zz_g": 2.2,
+            "NICS_zz_l": -15.56
+          },
+          "periph9": {
+            "HOMA": -66.432284,
+            "EN": 18.402003,
+            "GEO": 49.030281,
+            "LDM_OffDiag": 1.236226,
+            "LDM_Diag": 1.83955,
+            "LDM_Frob": 2.216348,
+            "LDM_RMSD": 0.246261,
+            "LDM_CT": -14.928704,
+            "Q_Frob": 0.489277,
+            "Q_RMSD": 0.057662,
+            "S_hom": 0.146425,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -59.324871,
+            "EN": 13.190938,
+            "GEO": 47.133934,
+            "LDM_OffDiag": 1.249882,
+            "LDM_Diag": 2.0465,
+            "LDM_Frob": 2.397992,
+            "LDM_RMSD": 0.239799,
+            "LDM_CT": -12.692667,
+            "Q_Frob": 0.533253,
+            "Q_RMSD": 0.05621,
+            "S_hom": 0.149099,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P4": {
+        "x": 0.93712,
+        "y": 24.816380925923763,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.013613,
+            "EN": 0.596996,
+            "GEO": 0.416617,
+            "LDM_OffDiag": 0.525004,
+            "LDM_Diag": 1.070326,
+            "LDM_Frob": 1.192152,
+            "LDM_RMSD": 0.23843,
+            "LDM_CT": -13.772,
+            "Q_Frob": 0.305798,
+            "Q_RMSD": 0.068378,
+            "S_hom": 0.408431,
+            "NICS_iso": -5.59,
+            "NICS_zz_g": -3.62,
+            "NICS_zz_l": -16.96
+          },
+          "_global": {
+            "HOMA_TOTAL": -39.971099,
+            "Q_G": 0.071239,
+            "S_hom_G": 0.13167,
+            "S_G": 0.169325
+          },
+          "periph5": {
+            "HOMA": -104.981941,
+            "EN": 52.778968,
+            "GEO": 53.202974,
+            "LDM_OffDiag": 1.431382,
+            "LDM_Diag": 1.137068,
+            "LDM_Frob": 1.828053,
+            "LDM_RMSD": 0.365611,
+            "LDM_CT": -20.096667,
+            "Q_Frob": 0.595482,
+            "Q_RMSD": 0.133154,
+            "S_hom": 0.212739,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -86.76075,
+            "EN": 32.85573,
+            "GEO": 54.90502,
+            "LDM_OffDiag": 1.299912,
+            "LDM_Diag": 1.419113,
+            "LDM_Frob": 1.924488,
+            "LDM_RMSD": 0.320748,
+            "LDM_CT": -15.918333,
+            "Q_Frob": 0.54093,
+            "Q_RMSD": 0.09876,
+            "S_hom": 0.214121,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.505829,
+            "EN": 0.196069,
+            "GEO": 0.298101,
+            "LDM_OffDiag": 0.514583,
+            "LDM_Diag": 1.724906,
+            "LDM_Frob": 1.800027,
+            "LDM_RMSD": 0.300004,
+            "LDM_CT": -14.725833,
+            "Q_Frob": 0.268324,
+            "Q_RMSD": 0.048989,
+            "S_hom": 0.345644,
+            "NICS_iso": -3.1,
+            "NICS_zz_g": 2.24,
+            "NICS_zz_l": -11.76
+          },
+          "periph9": {
+            "HOMA": -57.96122,
+            "EN": 16.784901,
+            "GEO": 42.176319,
+            "LDM_OffDiag": 1.29996,
+            "LDM_Diag": 1.855541,
+            "LDM_Frob": 2.265597,
+            "LDM_RMSD": 0.251733,
+            "LDM_CT": -14.818704,
+            "Q_Frob": 0.550441,
+            "Q_RMSD": 0.06487,
+            "S_hom": 0.147134,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -51.730578,
+            "EN": 12.207914,
+            "GEO": 40.522664,
+            "LDM_OffDiag": 1.305772,
+            "LDM_Diag": 2.058215,
+            "LDM_Frob": 2.437476,
+            "LDM_RMSD": 0.243748,
+            "LDM_CT": -12.7815,
+            "Q_Frob": 0.589608,
+            "Q_RMSD": 0.06215,
+            "S_hom": 0.147194,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P5": {
+        "x": 1.87416,
+        "y": 14.867986420389181,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.42782,
+            "EN": 0.866737,
+            "GEO": 0.561083,
+            "LDM_OffDiag": 0.596541,
+            "LDM_Diag": 1.08451,
+            "LDM_Frob": 1.237749,
+            "LDM_RMSD": 0.24755,
+            "LDM_CT": -14.275333,
+            "Q_Frob": 0.362329,
+            "Q_RMSD": 0.081019,
+            "S_hom": 0.393622,
+            "NICS_iso": -4.77,
+            "NICS_zz_g": -4.99,
+            "NICS_zz_l": -13.42
+          },
+          "_global": {
+            "HOMA_TOTAL": -34.445264,
+            "Q_G": 0.071152,
+            "S_hom_G": 0.134063,
+            "S_G": 0.168585
+          },
+          "periph5": {
+            "HOMA": -91.536772,
+            "EN": 48.402112,
+            "GEO": 44.13466,
+            "LDM_OffDiag": 1.467142,
+            "LDM_Diag": 1.16851,
+            "LDM_Frob": 1.875612,
+            "LDM_RMSD": 0.375122,
+            "LDM_CT": -19.802333,
+            "Q_Frob": 0.639158,
+            "Q_RMSD": 0.14292,
+            "S_hom": 0.215388,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -75.675154,
+            "EN": 30.60667,
+            "GEO": 46.068484,
+            "LDM_OffDiag": 1.31977,
+            "LDM_Diag": 1.442561,
+            "LDM_Frob": 1.955192,
+            "LDM_RMSD": 0.325865,
+            "LDM_CT": -15.847778,
+            "Q_Frob": 0.584797,
+            "Q_RMSD": 0.106769,
+            "S_hom": 0.211062,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": 0.137082,
+            "EN": 0.341723,
+            "GEO": 0.521195,
+            "LDM_OffDiag": 0.555145,
+            "LDM_Diag": 1.726529,
+            "LDM_Frob": 1.813585,
+            "LDM_RMSD": 0.302264,
+            "LDM_CT": -15.14,
+            "Q_Frob": 0.302059,
+            "Q_RMSD": 0.055148,
+            "S_hom": 0.332884,
+            "NICS_iso": -2.16,
+            "NICS_zz_g": 2.04,
+            "NICS_zz_l": -8.63
+          },
+          "periph9": {
+            "HOMA": -6.95867,
+            "EN": 3.279514,
+            "GEO": 4.679156,
+            "LDM_OffDiag": 0.702005,
+            "LDM_Diag": 1.870928,
+            "LDM_Frob": 1.998295,
+            "LDM_RMSD": 0.222033,
+            "LDM_CT": -14.757037,
+            "Q_Frob": 0.391087,
+            "Q_RMSD": 0.04609,
+            "S_hom": 0.201817,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -5.89951,
+            "EN": 2.162855,
+            "GEO": 4.736655,
+            "LDM_OffDiag": 0.780365,
+            "LDM_Diag": 2.068853,
+            "LDM_Frob": 2.211136,
+            "LDM_RMSD": 0.221114,
+            "LDM_CT": -12.8575,
+            "Q_Frob": 0.476203,
+            "Q_RMSD": 0.050196,
+            "S_hom": 0.190487,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "P6": {
+        "x": 2.81103,
+        "y": 4.203541040252568,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -0.908334,
+            "EN": 1.177211,
+            "GEO": 0.731124,
+            "LDM_OffDiag": 0.647417,
+            "LDM_Diag": 1.098692,
+            "LDM_Frob": 1.275254,
+            "LDM_RMSD": 0.255051,
+            "LDM_CT": -14.623,
+            "Q_Frob": 0.400658,
+            "Q_RMSD": 0.08959,
+            "S_hom": 0.385259,
+            "NICS_iso": -4.14,
+            "NICS_zz_g": -6.14,
+            "NICS_zz_l": -10.49
+          },
+          "_global": {
+            "HOMA_TOTAL": -28.57365,
+            "Q_G": 0.071299,
+            "S_hom_G": 0.132807,
+            "S_G": 0.167638
+          },
+          "periph5": {
+            "HOMA": -79.887314,
+            "EN": 44.506248,
+            "GEO": 36.381066,
+            "LDM_OffDiag": 1.44006,
+            "LDM_Diag": 1.202945,
+            "LDM_Frob": 1.876393,
+            "LDM_RMSD": 0.375279,
+            "LDM_CT": -19.673667,
+            "Q_Frob": 0.643439,
+            "Q_RMSD": 0.143877,
+            "S_hom": 0.215404,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -66.098838,
+            "EN": 28.507277,
+            "GEO": 38.591561,
+            "LDM_OffDiag": 1.314271,
+            "LDM_Diag": 1.473254,
+            "LDM_Frob": 1.974281,
+            "LDM_RMSD": 0.329047,
+            "LDM_CT": -15.856111,
+            "Q_Frob": 0.607021,
+            "Q_RMSD": 0.110826,
+            "S_hom": 0.207472,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.261331,
+            "EN": 0.503268,
+            "GEO": 0.758063,
+            "LDM_OffDiag": 0.584635,
+            "LDM_Diag": 1.73139,
+            "LDM_Frob": 1.827432,
+            "LDM_RMSD": 0.304572,
+            "LDM_CT": -15.435,
+            "Q_Frob": 0.325824,
+            "Q_RMSD": 0.059487,
+            "S_hom": 0.325741,
+            "NICS_iso": -1.65,
+            "NICS_zz_g": 1.88,
+            "NICS_zz_l": -6.84
+          },
+          "periph9": {
+            "HOMA": -3.556857,
+            "EN": 2.275683,
+            "GEO": 2.281174,
+            "LDM_OffDiag": 0.676002,
+            "LDM_Diag": 1.888082,
+            "LDM_Frob": 2.00545,
+            "LDM_RMSD": 0.222828,
+            "LDM_CT": -14.749444,
+            "Q_Frob": 0.391553,
+            "Q_RMSD": 0.046145,
+            "S_hom": 0.202593,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -2.916817,
+            "EN": 1.50201,
+            "GEO": 2.414807,
+            "LDM_OffDiag": 0.787884,
+            "LDM_Diag": 2.084203,
+            "LDM_Frob": 2.228153,
+            "LDM_RMSD": 0.222815,
+            "LDM_CT": -12.936667,
+            "Q_Frob": 0.501232,
+            "Q_RMSD": 0.052835,
+            "S_hom": 0.188369,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      },
+      "Produit": {
+        "x": 4.43478,
+        "y": -1.510001308745667,
+        "desc": {
+          "cyclopent": {
+            "HOMA": -1.279186,
+            "EN": 1.413246,
+            "GEO": 0.86594,
+            "LDM_OffDiag": 0.678274,
+            "LDM_Diag": 1.112688,
+            "LDM_Frob": 1.303124,
+            "LDM_RMSD": 0.260625,
+            "LDM_CT": -14.880333,
+            "Q_Frob": 0.423097,
+            "Q_RMSD": 0.094607,
+            "S_hom": 0.37999,
+            "NICS_iso": -3.8,
+            "NICS_zz_g": -6.94,
+            "NICS_zz_l": -8.68
+          },
+          "_global": {
+            "HOMA_TOTAL": -24.475385,
+            "Q_G": 0.071606,
+            "S_hom_G": 0.131492,
+            "S_G": 0.166749
+          },
+          "periph5": {
+            "HOMA": -70.989183,
+            "EN": 41.309532,
+            "GEO": 30.67965,
+            "LDM_OffDiag": 1.425061,
+            "LDM_Diag": 1.236792,
+            "LDM_Frob": 1.886917,
+            "LDM_RMSD": 0.377383,
+            "LDM_CT": -19.648667,
+            "Q_Frob": 0.650313,
+            "Q_RMSD": 0.145414,
+            "S_hom": 0.214367,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "nouveau": {
+            "HOMA": -58.773513,
+            "EN": 26.61303,
+            "GEO": 33.160483,
+            "LDM_OffDiag": 1.312719,
+            "LDM_Diag": 1.505348,
+            "LDM_Frob": 1.997324,
+            "LDM_RMSD": 0.332887,
+            "LDM_CT": -15.895278,
+            "Q_Frob": 0.623187,
+            "Q_RMSD": 0.113778,
+            "S_hom": 0.204735,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "benzene": {
+            "HOMA": -0.550215,
+            "EN": 0.607166,
+            "GEO": 0.943049,
+            "LDM_OffDiag": 0.602832,
+            "LDM_Diag": 1.740583,
+            "LDM_Frob": 1.842019,
+            "LDM_RMSD": 0.307003,
+            "LDM_CT": -15.664167,
+            "Q_Frob": 0.340121,
+            "Q_RMSD": 0.062097,
+            "S_hom": 0.321384,
+            "NICS_iso": -1.43,
+            "NICS_zz_g": 1.77,
+            "NICS_zz_l": -6
+          },
+          "periph9": {
+            "HOMA": -1.609966,
+            "EN": 1.514369,
+            "GEO": 1.095598,
+            "LDM_OffDiag": 0.665589,
+            "LDM_Diag": 1.907616,
+            "LDM_Frob": 2.020398,
+            "LDM_RMSD": 0.224489,
+            "LDM_CT": -14.773704,
+            "Q_Frob": 0.39325,
+            "Q_RMSD": 0.046345,
+            "S_hom": 0.201422,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          },
+          "periph10": {
+            "HOMA": -1.218486,
+            "EN": 0.97848,
+            "GEO": 1.240006,
+            "LDM_OffDiag": 0.797017,
+            "LDM_Diag": 2.103156,
+            "LDM_Frob": 2.249111,
+            "LDM_RMSD": 0.224911,
+            "LDM_CT": -13.0015,
+            "Q_Frob": 0.5166,
+            "Q_RMSD": 0.054454,
+            "S_hom": 0.185998,
+            "NICS_iso": null,
+            "NICS_zz_g": null,
+            "NICS_zz_l": null
+          }
+        }
+      }
+    },
+    "stereo_offset_kcal": -0.4253848158294265,
+    "barrier_kcal": 29.24485485112487,
+    "delta_E_kcal": -1.0846164929162405
+  }
+};
+
+const STEREOS = ['endo', 'exo'];
+const STEREO_LABEL = { endo: 'Endo', exo: 'Exo' };
+const POINT_ORDER = ['Reactif','P1','P2','P3','TS','P4','P5','P6','Produit'];
+
+const PANELS = [
+  // Bq1 row (Cyclopent)
+  { id:'cy_iso',  bq:'cyclopent', key:'NICS_iso',  title:'NICS_iso',   subtitle:'ppm', row:'bq1' },
+  { id:'cy_zzg',  bq:'cyclopent', key:'NICS_zz_g', title:'NICSzz global', subtitle:'ppm', row:'bq1' },
+  { id:'cy_zzl',  bq:'cyclopent', key:'NICS_zz_l', title:'NICSzz local',  subtitle:'ppm — référence aromaticité', row:'bq1' },
+  // Bq2 row (NitroBenzene)
+  { id:'bz_iso',  bq:'benzene',   key:'NICS_iso',  title:'NICS_iso',   subtitle:'ppm', row:'bq2' },
+  { id:'bz_zzg',  bq:'benzene',   key:'NICS_zz_g', title:'NICSzz global', subtitle:'ppm', row:'bq2' },
+  { id:'bz_zzl',  bq:'benzene',   key:'NICS_zz_l', title:'NICSzz local',  subtitle:'ppm — référence aromaticité', row:'bq2' },
+];
+
+const state = { stereos: new Set(['endo', 'exo']) };
+const charts = {};
+
+function buildPanels() {
+  PANELS.forEach(p => {
+    const row = document.getElementById(p.row === 'bq1' ? 'row-bq1' : 'row-bq2');
+    const div = document.createElement('div');
+    div.className = 'panel'; div.dataset.id = p.id;
+    div.innerHTML = `
+      <div class="panel-title">${p.title}<span class="subtitle">${p.subtitle}</span></div>
+      <div class="panel-canvas-wrap"><canvas></canvas></div>
+      <div class="panel-stats"></div>`;
+    row.appendChild(div);
+    const canvas = div.querySelector('canvas');
+    charts[p.id] = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: { labels: POINT_ORDER, datasets: [] },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        animation: { duration: 200 },
+        interaction: { mode: 'nearest', axis: 'xy', intersect: false },
+        scales: {
+          x: { type: 'category',
+               ticks: {
+                 color: (ctx) => POINT_ORDER[ctx.index] === 'TS' ? '#D85A30' : (mode === 'dark' ? '#9A9892' : '#6B6B6B'),
+                 font: (ctx) => ({ size: 9, weight: POINT_ORDER[ctx.index] === 'TS' ? 'bold' : 'normal' }),
+               },
+               grid: { color: 'rgba(127,127,127,0.07)' } },
+          y: { ticks: { font: { size: 9 } }, grid: { color: 'rgba(127,127,127,0.10)' } },
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: (items) => items[0]?.label || '',
+              label: (ctx) => `${ctx.dataset._stereoLabel}: ${ctx.parsed.y === null ? '—' : ctx.parsed.y.toFixed(2)} ppm`,
+            },
+          },
+        },
+      },
+    });
+  });
+}
+
+function renderPanel(p) {
+  const ch = charts[p.id];
+  const datasets = [];
+  state.stereos.forEach(s => {
+    const col = c(stereoColor[s]);
+    const dash = (s === 'exo') ? [6, 4] : [];
+    const ptStyle = (s === 'exo') ? 'triangle' : 'circle';
+    const raw = POINT_ORDER.map(pt => DATA[s].arox[pt].desc[p.bq]?.[p.key]);
+    const data = raw.map(v => Number.isFinite(v) ? v : null);
+    datasets.push({
+      _stereoLabel: STEREO_LABEL[s], label: STEREO_LABEL[s], data,
+      borderColor: col, backgroundColor: col,
+      borderDash: dash, borderWidth: 1.8,
+      pointRadius: POINT_ORDER.map(pt => pt === 'TS' ? 8 : 4),
+      pointHoverRadius: POINT_ORDER.map(pt => pt === 'TS' ? 11 : 6),
+      pointBackgroundColor: POINT_ORDER.map(pt => pt === 'TS' ? tsColor.fill : col),
+      pointBorderColor:     POINT_ORDER.map(pt => pt === 'TS' ? tsColor.border : col),
+      pointBorderWidth:     POINT_ORDER.map(pt => pt === 'TS' ? 2 : 1),
+      pointStyle:           POINT_ORDER.map(pt => pt === 'TS' ? 'star' : ptStyle),
+      spanGaps: true, tension: 0.15,
+    });
+  });
+  ch.data.datasets = datasets;
+  ch.update();
+  const statsRoot = document.querySelector(`.panel[data-id="${p.id}"] .panel-stats`);
+  statsRoot.innerHTML = '';
+  state.stereos.forEach(s => {
+    const tsIdx = POINT_ORDER.indexOf('TS');
+    const raw = DATA[s].arox['TS'].desc[p.bq]?.[p.key];
+    const span = document.createElement('span');
+    span.className = s;
+    span.innerHTML = `<strong>TS ${STEREO_LABEL[s]}</strong>: ${Number.isFinite(raw) ? raw.toFixed(2) : '—'} ppm`;
+    statsRoot.appendChild(span);
+  });
+}
+function render() { PANELS.forEach(p => renderPanel(p)); buildLegend(); }
+
+function buildLegend() {
+  const root = document.getElementById('legend');
+  root.innerHTML = '';
+  const methSec = document.createElement('div');
+  methSec.className = 'legend-section';
+  methSec.innerHTML = `<span class="heading">Méthode NICS</span>
+    <span class="legend-item"><span style="color:var(--text)">ωB97X-D/def2SVP, Bq @ 1.7 Å au-dessus du plan moyen</span></span>`;
+  root.appendChild(methSec);
+  const stSec = document.createElement('div');
+  stSec.className = 'legend-section';
+  stSec.innerHTML = `<span class="heading">Stéréochimie</span>`;
+  state.stereos.forEach(s => {
+    const it = document.createElement('span');
+    it.className = 'legend-item';
+    it.style.color = c(stereoColor[s]);
+    it.innerHTML = `<span class="stroke-mini" style="border-top-style:${s==='exo'?'dashed':'solid'}"></span><span style="color:var(--text)">${STEREO_LABEL[s]} (${s==='exo'?'tirets, triangle':'plein, cercle'})</span>`;
+    stSec.appendChild(it);
+  });
+  root.appendChild(stSec);
+  const tsSec = document.createElement('div');
+  tsSec.className = 'legend-section';
+  tsSec.innerHTML = `<span class="heading">TS</span><span class="legend-item"><span style="color:${tsColor.fill};font-size:1.15em;line-height:1;display:inline-block;width:14px;text-align:center">★</span>Transition state</span>`;
+  root.appendChild(tsSec);
+  const intSec = document.createElement('div');
+  intSec.className = 'legend-section';
+  intSec.innerHTML = `<span class="heading">Lecture</span>
+    <span class="legend-item">NICS plus négatif → aromaticité plus forte (courants π).</span>
+    <span class="legend-item">NICS<sub>zz</sub> <em>local</em> recommandé pour comparer R / TS / P.</span>`;
+  root.appendChild(intSec);
+}
+
+function buildToolbar() {
+  const stRow = document.getElementById('stereo-row');
+  STEREOS.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'chip'; btn.dataset.stereo = s;
+    btn.setAttribute('aria-pressed', state.stereos.has(s));
+    btn.style.borderColor = c(stereoColor[s]);
+    btn.innerHTML = `<span class="swatch" style="background:${c(stereoColor[s])}"></span>${STEREO_LABEL[s]}`;
+    btn.addEventListener('click', () => {
+      if (state.stereos.has(s)) { if (state.stereos.size > 1) state.stereos.delete(s); }
+      else state.stereos.add(s);
+      btn.setAttribute('aria-pressed', state.stereos.has(s));
+      render();
+    });
+    stRow.appendChild(btn);
+  });
+  document.getElementById('btn-default').addEventListener('click', () => {
+    state.stereos = new Set(['endo', 'exo']);
+    document.querySelectorAll('[data-stereo]').forEach(b => b.setAttribute('aria-pressed', state.stereos.has(b.dataset.stereo)));
+    render();
+  });
+}
+
+buildToolbar();
+buildPanels();
+render();
+
+// ----- PNG download -----
+const EXPORT_TITLE  = "NICS panels — Diels-Alder p-nitrobenzène + cyclopentadiène";
+const EXPORT_METHOD = "ωB97X-D/def2SVP, Bq @ 1.7 Å";
+const EXPORT_SLUG   = "p-nitro-cyclopent_NICS";
+
+function captureHtmlAsImage(el, width, dpr) {
+  if (!el) return Promise.resolve(null);
+  dpr = dpr || Math.max(1, window.devicePixelRatio || 1);
+  const pageStyles = Array.from(document.querySelectorAll('style')).map(s => s.textContent).join('\n');
+  const LEG = Math.round(13 * dpr), LEG_H = Math.round(12 * dpr);
+  const forceLight =
+    ':root{--bg:#FFFFFF;--surface:#FFFFFF;--text:#1A1A1A;--muted:#6B6B6B;--border:#E2E0DA;--accent:#534AB7;}' +
+    '@media (prefers-color-scheme: dark){:root{--bg:#FFFFFF;--surface:#FFFFFF;--text:#1A1A1A;--muted:#6B6B6B;--border:#E2E0DA;--accent:#534AB7;}}' +
+    'body,html{background:#FFFFFF;color:#1A1A1A;}' +
+    '.legend-row,#legend{font-size:' + LEG + 'px !important;}' +
+    '.legend-row .heading{font-size:' + LEG_H + 'px !important;font-weight:700 !important;}' +
+    '.legend-row .legend-item,.legend-row .legend-item *{font-size:' + LEG + 'px !important;}';
+  const height = Math.max(100 * dpr, Math.round(el.scrollHeight * dpr + 24 * dpr));
+  const svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">' +
+    '<foreignObject x="0" y="0" width="100%" height="100%">' +
+    '<div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff;padding:' + (10*dpr) + 'px ' + (12*dpr) + 'px;box-sizing:border-box;width:' + width + 'px;font-family:-apple-system,Segoe UI,Arial,sans-serif;">' +
+    '<style>' + pageStyles + '\n' + forceLight + '</style>' + el.outerHTML +
+    '</div></foreignObject></svg>';
+  const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload  = () => resolve({ img, height });
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+async function downloadDiagram() {
+  const DPR = Math.max(1, window.devicePixelRatio || 1);
+  const F_TITLE = 30;
+  const F_SUB   = Math.round(13 * DPR);
+  const F_PANEL = Math.round(13 * DPR);
+  const F_ROWTITLE = Math.round(15 * DPR);
+  const margin = Math.round(28 * DPR);
+  const lineGap = Math.round(8 * DPR);
+  const titleH = F_TITLE + F_SUB * 2 + lineGap * 3 + Math.round(10 * DPR);
+  const panelImages = await Promise.all(PANELS.map(async p => {
+    const ch = charts[p.id];
+    const img = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = ch.toBase64Image('image/png', 1); });
+    return { panel: p, img };
+  }));
+  const cellW = panelImages[0].img.naturalWidth;
+  const cellH = panelImages[0].img.naturalHeight;
+  const panelTitleH = Math.round(28 * DPR);
+  const rowTitleH = Math.round(40 * DPR);
+  const cols = 3;
+  const colGap = Math.round(20 * DPR), rowGap = Math.round(20 * DPR);
+  const gridW = cols * cellW + (cols-1) * colGap;
+  const rowH = cellH + panelTitleH;
+  const twoRowsH = rowTitleH + rowH + rowGap + rowTitleH + rowH;
+  const legendData = await captureHtmlAsImage(document.getElementById('legend'), gridW, DPR);
+  const legendH = legendData ? legendData.height : 0;
+  const legendGap = Math.round(14 * DPR);
+  const out = document.createElement('canvas');
+  out.width  = gridW + margin * 2;
+  out.height = twoRowsH + margin * 2 + titleH + (legendH ? legendH + legendGap : 0);
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, out.width, out.height);
+  ctx.textBaseline = 'top';
+  let y = margin;
+  ctx.fillStyle = '#1A1A1A';
+  ctx.font = 'bold ' + F_TITLE + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.fillText(EXPORT_TITLE, margin, y); y += F_TITLE + lineGap;
+  ctx.font = F_SUB + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.fillStyle = '#6B6B6B';
+  ctx.fillText('Method : ' + EXPORT_METHOD, margin, y); y += F_SUB + lineGap;
+  const stereos = [...state.stereos].sort().map(s => STEREO_LABEL[s]).join(' + ');
+  ctx.fillText('Config : ' + stereos + '  ·  6 NICS panels (Bq1 + Bq2)', margin, y);
+  // Row titles + grid
+  let rowY = margin + titleH;
+  const bq1Panels = panelImages.filter(pi => pi.panel.row === 'bq1');
+  const bq2Panels = panelImages.filter(pi => pi.panel.row === 'bq2');
+  [['Bq1 — Cyclopent (5)', bq1Panels, '#0F6E56'], ['Bq2 — NitroBenzène (6)', bq2Panels, '#534AB7']].forEach(([rtitle, panels, color]) => {
+    // row title
+    ctx.fillStyle = color;
+    ctx.fillRect(margin, rowY, Math.round(4*DPR), rowTitleH - Math.round(8*DPR));
+    ctx.fillStyle = '#1A1A1A';
+    ctx.font = 'bold ' + F_ROWTITLE + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+    ctx.fillText(rtitle, margin + Math.round(12*DPR), rowY + Math.round(4*DPR));
+    rowY += rowTitleH;
+    panels.forEach(({ panel, img }, i) => {
+      const cellX = margin + i * (cellW + colGap);
+      const cellY = rowY;
+      ctx.fillStyle = '#1A1A1A';
+      ctx.font = 'bold ' + F_PANEL + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+      ctx.fillText(panel.title, cellX, cellY);
+      ctx.font = (F_PANEL - 1) + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+      ctx.fillStyle = '#6B6B6B';
+      ctx.textAlign = 'right';
+      ctx.fillText(panel.subtitle, cellX + cellW, cellY);
+      ctx.textAlign = 'left';
+      ctx.drawImage(img, cellX, cellY + panelTitleH);
+    });
+    rowY += rowH + rowGap;
+  });
+  if (legendData) ctx.drawImage(legendData.img, margin, margin + titleH + twoRowsH + legendGap);
+  const stereoTag = [...state.stereos].sort().join('-');
+  const link = document.createElement('a');
+  link.download = `${EXPORT_SLUG}_${stereoTag}_${new Date().toISOString().slice(0,10)}.png`;
+  link.href = out.toDataURL('image/png');
+  link.click();
+}
+document.getElementById('btn-download').addEventListener('click', downloadDiagram);
+
+})();
+</script>
+</body>
+</html>

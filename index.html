@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Diels-Alder p-nitrobenzène + cyclopentadiène — sommaire</title>
+<style>
+:root {
+  --bg:#FAFAF7; --surface:#FFFFFF; --text:#1A1A1A; --muted:#6B6B6B; --border:#E2E0DA;
+  --accent:#534AB7;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#14141A; --surface:#1E1E26; --text:#ECEAE3; --muted:#9A9892; --border:#2E2E38; --accent:#AFA9EC; }
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; background:var(--bg); color:var(--text); }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; font-size:14px; line-height:1.55;
+       max-width:1200px; margin:0 auto; padding:1.5rem; }
+header h1 { font-size:1.55rem; font-weight:600; letter-spacing:-0.015em; margin:0 0 0.6rem; }
+.lede { color:var(--muted); font-size:0.95rem; margin:0 0 1.4rem; max-width:880px; }
+.lede code { background:var(--border); padding:1px 4px; border-radius:3px; font-size:0.85em; }
+.lede strong { color:var(--text); }
+
+.kpi-strip { display:flex; flex-wrap:wrap; gap:0.7rem; margin-bottom:1.6rem; padding:0.9rem;
+             background:var(--surface); border:1px solid var(--border); border-radius:8px; }
+.kpi { display:flex; flex-direction:column; min-width:140px; }
+.kpi .label { color:var(--muted); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:600; margin-bottom:0.15rem; }
+.kpi .val { font-size:1.05rem; font-weight:600; font-variant-numeric:tabular-nums; }
+.kpi.endo .label { color:#185FA5; }
+.kpi.exo  .label { color:#993C1D; }
+@media (prefers-color-scheme: dark) {
+  .kpi.endo .label { color:#85B7EB; } .kpi.exo .label { color:#F0997B; }
+}
+
+h2.section { font-size:1.1rem; font-weight:600; margin:1.6rem 0 0.6rem; letter-spacing:-0.01em; }
+
+.cards { display:grid; grid-template-columns:repeat(2, 1fr); gap:1rem; }
+@media (max-width:800px) { .cards { grid-template-columns:1fr; } }
+.card-link { display:block; background:var(--surface); border:1px solid var(--border); border-radius:10px;
+             padding:1.1rem 1.2rem; text-decoration:none; color:var(--text);
+             transition:border-color 0.15s, transform 0.1s, box-shadow 0.15s; }
+.card-link:hover { border-color:var(--accent); transform:translateY(-1px); box-shadow:0 4px 12px rgba(83,74,183,0.10); }
+.card-link h3 { margin:0 0 0.3rem; font-size:1rem; font-weight:600; }
+.card-link h3 .arrow { color:var(--accent); margin-left:0.4rem; }
+.card-link .tag { display:inline-block; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.05em;
+                  font-weight:600; padding:1px 7px; border-radius:8px; margin-right:0.4rem;
+                  background:var(--bg); color:var(--muted); border:1px solid var(--border); }
+.card-link .desc { color:var(--muted); font-size:0.86rem; margin:0.35rem 0 0; line-height:1.5; }
+.card-link.new { border-color:var(--accent); }
+.card-link.new::before { content:"NOUVEAU"; position:relative; float:right;
+  background:var(--accent); color:#fff; font-size:0.6rem; padding:1px 6px; border-radius:6px;
+  font-weight:700; letter-spacing:0.05em; }
+
+.context-block { background:var(--surface); border:1px solid var(--border); border-radius:8px;
+                 padding:1rem 1.2rem; margin-bottom:1.4rem; }
+.context-block h3 { margin:0 0 0.4rem; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--muted); font-weight:600; }
+.context-block ul { margin:0.3rem 0 0; padding-left:1.2rem; font-size:0.86rem; }
+.context-block li { margin-bottom:0.15rem; }
+.context-block .motif-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:0.3rem 1.5rem; font-size:0.83rem; margin-top:0.3rem; }
+.context-block .motif-grid .key { color:var(--muted); }
+.context-block .star { color:var(--accent); font-weight:600; }
+.context-block table { width:100%; border-collapse:collapse; font-size:0.82rem; margin-top:0.4rem;
+                       font-variant-numeric:tabular-nums; }
+.context-block th, .context-block td { padding:3px 6px; text-align:right; border-bottom:1px solid var(--border); }
+.context-block th { color:var(--muted); font-weight:600; font-size:0.7rem; text-transform:uppercase; letter-spacing:0.04em; }
+.context-block th:first-child, .context-block td:first-child { text-align:left; color:var(--muted); }
+.context-block .ts-row td { background:rgba(216, 90, 48, 0.07); font-weight:500; color:var(--text); }
+
+footer { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--border); }
+.methods-note { font-size:0.78rem; color:var(--muted); margin:0 0 0.5rem; }
+.methods-note strong { color:var(--text); }
+.repo-link { font-size:0.75rem; color:var(--muted); }
+.repo-link a { color:var(--accent); text-decoration:none; }
+.repo-link a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Diels-Alder <em>p</em>-nitrobenzène + cyclopentadiène — sommaire des visualisations</h1>
+  <p class="lede">
+    Étude AroX-DFT de la cycloaddition [4+2] entre le <strong>cyclopentadiène</strong> (diène) et le <strong><em>p</em>-nitrobenzène</strong>
+    (diénophile activé par −NO₂), au niveau <code>wB97XD/def2-SVP</code> (Gaussian 16).
+    Trajectoires IRC complètes pour les deux stéréochimies <strong>endo</strong> et <strong>exo</strong>, avec
+    descripteurs d'aromaticité (HOMA, LDM, Q, S-hom) sur 6 motifs cycliques + <strong>NICS</strong> (ωB97X-D/def2SVP, Bq à 1.7 Å)
+    pour Cyclopent et NitroBenzène aux 9 points clés du chemin (R → P1–P3 → TS → P4–P6 → Produit).
+    Vérifications xlsx ↔ JSON ↔ HTML : 1620 cellules × 0 mismatch.
+  </p>
+</header>
+
+<div class="kpi-strip">
+  <div class="kpi endo">
+    <span class="label">Endo</span>
+    <span class="val">ΔE‡ = 29.65 kcal/mol</span>
+    <span class="val" style="font-size:0.85rem;color:var(--muted)">ΔrE = −2.21 kcal/mol</span>
+  </div>
+  <div class="kpi exo">
+    <span class="label">Exo</span>
+    <span class="val">ΔE‡ = 29.24 kcal/mol</span>
+    <span class="val" style="font-size:0.85rem;color:var(--muted)">ΔrE = −1.08 kcal/mol</span>
+  </div>
+  <div class="kpi">
+    <span class="label">Préférence cinétique</span>
+    <span class="val">Exo (ΔΔE‡ ≈ 0.4)</span>
+  </div>
+  <div class="kpi">
+    <span class="label">Préférence thermodynamique</span>
+    <span class="val">Endo (ΔΔrE ≈ 1.1)</span>
+  </div>
+  <div class="kpi">
+    <span class="label">Points par stéréo</span>
+    <span class="val">9 (R, P1–P6, TS, P)</span>
+  </div>
+  <div class="kpi">
+    <span class="label">Cycles · NICS</span>
+    <span class="val">6 · 2 (Bq1, Bq2)</span>
+  </div>
+</div>
+
+<h2 class="section">Vues disponibles</h2>
+
+<div class="cards">
+  <a class="card-link" href="pes.html">
+    <h3>PES — Surface d'énergie potentielle <span class="arrow">→</span></h3>
+    <span class="tag">Énergie</span><span class="tag">2 stéréos</span><span class="tag">+ descripteurs Y-droit</span>
+    <p class="desc">Trajectoires IRC complètes endo et exo superposées, marqueurs Réactif/P1–P6/TS/Produit placés à leur vraie coordonnée IRC (matchée par énergie).
+    Toggle baseline AroX / per-stéréo. Annotations ΔE‡, ΔrE. Multi-sélection descripteurs sur axe Y droit.</p>
+  </a>
+
+  <a class="card-link" href="heatmap.html">
+    <h3>Heatmap aromaticité <span class="arrow">→</span></h3>
+    <span class="tag">6 cycles × 9 points</span><span class="tag">HOMA / S-hom</span>
+    <p class="desc">Heatmap par stéréochimie, échelle divergente centrée à HOMA = 0.5. Métriques HOMA (par cycle) ou S-hom (G), HOMA TOTAL, S (G), Q (G) (globaux). Clip [−2, 1.5] pour gérer les valeurs extrêmes au Réactif.</p>
+  </a>
+
+  <a class="card-link" href="descriptors.html">
+    <h3>Descripteurs vs point IRC <span class="arrow">→</span></h3>
+    <span class="tag">18 descripteurs</span><span class="tag">Multi-select</span><span class="tag">Normaliser</span>
+    <p class="desc">Multi-sélection : superposer plusieurs descripteurs (couleur = descripteur, forme = cycle), 6 cycles différenciés par forme de marqueur + style de trait.
+    Toggle <em>Normaliser</em> [0, 1] pour comparer les <strong>formes</strong> quand les plages diffèrent fortement.</p>
+  </a>
+
+  <a class="card-link" href="panels.html">
+    <h3>Panels comparatifs endo vs exo <span class="arrow">→</span></h3>
+    <span class="tag">2×3 grid</span><span class="tag">Vue synoptique</span>
+    <p class="desc">Six mini-graphes : énergie + HOMA aromatique NitroBenzène + 4 descripteurs globaux (HOMA TOTAL, S (G), Q (G), S-hom (G)).
+    TS mis en évidence par étoile orange sur chaque panel.</p>
+  </a>
+
+  <a class="card-link new" href="nics.html">
+    <h3>NICS panels <span class="arrow">→</span></h3>
+    <span class="tag">2 cycles × 3 métriques</span><span class="tag">ωB97X-D/def2SVP</span><span class="tag">Bq @ 1.7 Å</span>
+    <p class="desc">Indices NICS (charge fantôme Bq à 1.7 Å au-dessus du plan moyen) pour <strong>Bq1 Cyclopent</strong> (s'aromatise au TS) et <strong>Bq2 NitroBenzène</strong> (perd son aromaticité).
+    Trois métriques par cycle : NICS_iso, NICS_zz global, NICS_zz local.</p>
+  </a>
+</div>
+
+<h2 class="section">Énergies relatives (kcal/mol, réf = Réactif-endo)</h2>
+
+<div class="context-block">
+  <table>
+    <thead>
+      <tr><th>Point</th><th>Endo</th><th>Exo</th><th>Endo HOMA TOTAL</th><th>Bq1 NICSzz loc.</th><th>Bq2 NICSzz loc.</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Reactif</td><td>0.00</td><td>−0.43</td><td>−55.00</td><td>−14.47</td><td>−19.01</td></tr>
+      <tr><td>P1</td><td>3.25</td><td>1.70</td><td>−45.07</td><td>−14.62</td><td>−18.97</td></tr>
+      <tr><td>P2</td><td>13.65</td><td>9.83</td><td>−29.02</td><td>−15.09</td><td>−18.43</td></tr>
+      <tr><td>P3</td><td>24.61</td><td>23.69</td><td>−18.89</td><td>−15.87</td><td>−16.67</td></tr>
+      <tr class="ts-row"><td><strong>TS</strong></td><td><strong>29.65</strong></td><td><strong>29.24</strong></td><td>−12.31</td><td><strong>−16.22</strong></td><td>−13.24</td></tr>
+      <tr><td>P4</td><td>26.02</td><td>25.24</td><td>−8.40</td><td>−14.89</td><td>−10.18</td></tr>
+      <tr><td>P5</td><td>13.29</td><td>14.87</td><td>−4.51</td><td>−11.95</td><td>−7.55</td></tr>
+      <tr><td>P6</td><td>3.36</td><td>4.62</td><td>−2.60</td><td>−10.17</td><td>−6.68</td></tr>
+      <tr><td>Produit</td><td>−2.21</td><td>−1.51</td><td>−1.55</td><td>−9.08</td><td>−6.31</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2 class="section">Contexte chimique</h2>
+
+<div class="context-block">
+  <h3>Système</h3>
+  <p style="margin:0;font-size:0.88rem;">
+    Réaction de Diels-Alder [4+2] entre le cyclopentadiène (diène) et le <em>p</em>-nitrobenzène (diénophile).
+    Le groupement <strong>−NO₂</strong> active le benzène en abaissant l'énergie du LUMO ; barrières plus accessibles que pour la version benzène pur.
+    Deux approches stéréochimiques : <em>endo</em> (interactions secondaires favorables) et <em>exo</em> (sans interactions secondaires mais sans clash stérique).
+  </p>
+</div>
+
+<div class="context-block">
+  <h3>6 motifs cycliques étudiés</h3>
+  <div class="motif-grid">
+    <span><span class="key">1.</span> <strong>Cyclopent (5)</strong> — cycle du diène <span class="star">★ Bq1</span></span>
+    <span><span class="key">4.</span> <strong>NitroBenzène (6)</strong> <span class="star">★ aromatique réactant · Bq2</span></span>
+    <span><span class="key">2.</span> <strong>Périph 5</strong> — fusion 5-atomes</span>
+    <span><span class="key">5.</span> <strong>Périph 9</strong> — 9-atomes périphérique</span>
+    <span><span class="key">3.</span> <strong>NewCycle (6)</strong> — cycle formé par la DA (manuel)</span>
+    <span><span class="key">6.</span> <strong>Périph 10</strong> — 10-atomes (grosse boucle)</span>
+  </div>
+</div>
+
+<div class="context-block">
+  <h3>Vérifications de cohérence (workflow AroX) — PASS</h3>
+  <ul>
+    <li><strong>CHECK A</strong> — HOMA ↔ LDM par indices triés : 18/18 fichiers .arx, 6/6 cycles trouvés en commun</li>
+    <li><strong>CHECK B</strong> — xlsx ↔ .arx cellule par cellule : 1620/1620 cellules concordent</li>
+    <li><strong>CHECK V1</strong> — xlsx ↔ JSON combiné (côté Visualisation) : 0 mismatch</li>
+    <li><strong>CHECK V2</strong> — JSON ↔ énergies absolues pes_energies.json : 18/18</li>
+    <li><strong>CHECK V3</strong> — 5 HTML embedded DATA == combined JSON : 5/5</li>
+  </ul>
+</div>
+
+<footer>
+  <p class="methods-note">
+    <strong>Methods.</strong> Intrinsic reaction coordinate <strong>wB97XD/def2-SVP</strong> (Gaussian 16). Descripteurs AroX (HOMA Krygowski R<sub>opt</sub>=1.3913 Å,
+    LDM, Q, S-hom) calculés sur 9 géométries IRC × 6 motifs cycliques. NICS via charge fantôme <strong>Bq</strong> à 1.7 Å au-dessus du plan moyen, niveau
+    <strong>ωB97X-D/def2SVP</strong> en GIAO (Bq1 = Cyclopent, Bq2 = NitroBenzène). Coordonnées des P1–P6 sur l'axe x : Net Reaction Coordinate IRC réelle
+    (matchée par énergie absolue).
+  </p>
+  <p class="repo-link">
+    Code source et données : <a href="https://github.com/ariaX1973/p-nitro-cyclopent">github.com/ariaX1973/p-nitro-cyclopent</a> ·
+    Compagnon : <a href="https://ariax1973.github.io/da-benz-cyclopent/">da-benz-cyclopent</a> (DA benzène pur).
+  </p>
+</footer>
+
+</body>
+</html>
