@@ -42,10 +42,10 @@ header h1 { font-size:1.35rem; font-weight:600; letter-spacing:-0.01em; margin:0
 .compare-chip[aria-pressed="true"] { border-width:2px; padding:2px 8px; font-weight:500; }
 .compare-canvas-wrap { position:relative; height:420px; margin-top:0.75rem; }
 .compare-actions { display:flex; gap:0.4rem; margin-top:0.5rem; flex-wrap:wrap; }
-.compare-legend { font-size:0.76rem; color:var(--muted); margin-top:0.5rem;
-                  display:flex; flex-wrap:wrap; gap:0.5rem 0.9rem; }
-.compare-legend-item { display:inline-flex; align-items:center; gap:5px; }
-.compare-legend-stroke { width:22px; height:0; border-top:2.5px solid currentColor; display:inline-block; }
+.compare-legend { font-size:0.95rem; color:var(--muted); margin-top:0.5rem;
+                  display:flex; flex-wrap:wrap; gap:0.7rem 1.4rem; }
+.compare-legend-item { display:inline-flex; align-items:center; gap:8px; }
+.compare-legend-stroke { width:36px; height:0; border-top:4.5px solid currentColor; display:inline-block; flex-shrink:0; }
 
 .grid-cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
               gap:0.75rem; margin-top:0.75rem; }
@@ -4981,12 +4981,14 @@ function captureHtmlAsImage(el, width, dpr) {
   if (!el) return Promise.resolve(null);
   dpr = dpr || Math.max(1, window.devicePixelRatio || 1);
   const pageStyles = Array.from(document.querySelectorAll('style')).map(s => s.textContent).join('\n');
-  const LEG = Math.round(13 * dpr);
+  const LEG = Math.round(15 * dpr);
+  const LEG_STROKE = Math.round(4.5 * dpr);
   const forceLight =
     ':root{--bg:#FFFFFF;--surface:#FFFFFF;--text:#1A1A1A;--muted:#6B6B6B;--border:#E2E0DA;--accent:#534AB7;}' +
     '@media (prefers-color-scheme: dark){:root{--bg:#FFFFFF;--surface:#FFFFFF;--text:#1A1A1A;--muted:#6B6B6B;--border:#E2E0DA;--accent:#534AB7;}}' +
     'body,html{background:#FFFFFF;color:#1A1A1A;}' +
-    '.compare-legend,#compare-legend{font-size:' + LEG + 'px !important;}';
+    '.compare-legend,#compare-legend{font-size:' + LEG + 'px !important;}' +
+    '.compare-legend-stroke{width:' + Math.round(36 * dpr) + 'px !important; border-top:' + LEG_STROKE + 'px solid currentColor !important; flex-shrink:0 !important;}';
   const height = Math.max(100 * dpr, Math.round(el.scrollHeight * dpr + 24 * dpr));
   const svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">' +
     '<foreignObject x="0" y="0" width="100%" height="100%">' +
