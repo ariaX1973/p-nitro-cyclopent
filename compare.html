@@ -115,6 +115,7 @@ footer { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border)
     <div class="compare-row" id="grid-desc-row"><span class="label">Descripteurs</span></div>
     <div class="compare-row">
       <span class="label">Actions</span>
+      <button class="compare-chip" id="grid-pes" aria-pressed="true" title="Courbe PES en arrière-plan de chaque mini-graphe (axe Y droit en kcal/mol)">PES en arrière-plan</button>
       <button class="compare-chip" id="grid-preset-aroma" title="HOMA, HOMA TOTAL, NICSiso, NICSzz local">Preset aromaticité</button>
       <button class="compare-chip" id="grid-preset-ldm" title="LDM Off Diag, LDM Frob, LDM RMSD, LDM CT %">Preset LDM</button>
       <button class="compare-chip" id="grid-clear">Tout désélectionner</button>
@@ -4840,7 +4841,9 @@ function cmpInit() {
         x: { type: 'linear', title: { display: true, text: 'Coordonnée de réaction (amu½·bohr)' },
              grid: { color: 'rgba(127,127,127,0.10)' } },
         y: { title: { display: true, text: 'Valeur' }, grid: { color: 'rgba(127,127,127,0.12)' } },
-        yPES: { display: false, position: 'right', title: { display: false }, grid: { drawOnChartArea: false } },
+        yPES: { display: false, position: 'right',
+                title: { display: true, text: 'ΔE (kcal/mol)', font: { size: 12 } },
+                grid: { drawOnChartArea: false } },
       },
       plugins: {
         legend: { display: false },
@@ -5049,6 +5052,7 @@ const gridState = {
   stereos: new Set(['endo', 'exo']),
   motifs:  new Set(['benzene']),
   descriptors: new Set(['HOMA', 'HOMA_TOTAL', 'NICS_zz_l', 'S_G']),
+  showPES: true,
 };
 const gridCharts = {};
 
@@ -5077,6 +5081,11 @@ function gridBuildToolbar() {
 
   buildDescriptorRow(document.getElementById('grid-desc-row'), gridState, gridRender, 'gridDesc');
 
+  document.getElementById('grid-pes').addEventListener('click', (e) => {
+    gridState.showPES = !gridState.showPES;
+    e.currentTarget.setAttribute('aria-pressed', gridState.showPES);
+    gridRender();
+  });
   document.getElementById('grid-preset-aroma').addEventListener('click', () => {
     gridState.descriptors = new Set(['HOMA', 'HOMA_TOTAL', 'NICS_iso', 'NICS_zz_l']);
     document.querySelectorAll('[data-grid-desc]').forEach(b => b.setAttribute('aria-pressed', gridState.descriptors.has(b.dataset.gridDesc)));
@@ -5121,6 +5130,20 @@ function gridRender() {
     root.appendChild(card);
 
     const datasets = [];
+    // PES en arrière-plan (1 courbe par stéréo actif, axe Y droit)
+    if (gridState.showPES) {
+      gridState.stereos.forEach(stereo => {
+        datasets.push({
+          label: `_pes_${stereo}`,
+          data: DATA[stereo].pes_irc.map(p => ({ x: p.x, y: p.y })),
+          borderColor: 'rgba(127,127,127,0.45)',
+          backgroundColor: 'rgba(127,127,127,0.08)',
+          borderWidth: 1.2, pointRadius: 0, pointHoverRadius: 0,
+          borderDash: (stereo === 'exo') ? [4, 3] : [],
+          tension: 0.25, yAxisID: 'yPES', order: 10,
+        });
+      });
+    }
     gridState.stereos.forEach(stereo => {
       const stereoCol = c(stereoColor[stereo]);
       const xs = POINT_ORDER.map(p => DATA[stereo].arox[p].x);
@@ -5133,7 +5156,7 @@ function gridRender() {
         borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
         pointStyle: (stereo === 'exo') ? 'triangle' : 'circle',
         borderDash: (stereo === 'exo') ? [5, 3] : [],
-        tension: 0.15, spanGaps: true,
+        tension: 0.15, spanGaps: true, yAxisID: 'y', order: 5,
       });
     });
 
@@ -5153,13 +5176,23 @@ function gridRender() {
           y: { ticks: { font: { size: 10 } },
                title: { display: true, text: d.label, font: { size: 10 }, padding: { top: 0, bottom: 2 } },
                grid: { color: 'rgba(127,127,127,0.10)' } },
+          yPES: { display: gridState.showPES, position: 'right',
+                  ticks: { font: { size: 9 }, color: 'rgba(127,127,127,0.7)' },
+                  title: { display: gridState.showPES, text: 'ΔE (kcal/mol)',
+                           font: { size: 9 }, color: 'rgba(127,127,127,0.7)' },
+                  grid: { drawOnChartArea: false } },
         },
         plugins: {
           legend: { display: false },
           tooltip: { callbacks: { label: (ctx) => {
+            const lbl = ctx.dataset.label;
+            if (lbl && lbl.startsWith('_pes_')) {
+              const stereo = lbl.slice(5);
+              return `PES ${STEREO_LABEL[stereo] || stereo} : ΔE = ${Number.isFinite(ctx.parsed.y) ? ctx.parsed.y.toFixed(2) : '—'} kcal/mol`;
+            }
             const v = ctx.parsed.y;
             const pt = POINT_ORDER[ctx.dataIndex] || '';
-            return `${ctx.dataset.label} @ ${pt} : ${Number.isFinite(v) ? v.toFixed(3) : '—'}`;
+            return `${lbl} @ ${pt} : ${Number.isFinite(v) ? v.toFixed(3) : '—'}`;
           } } },
         },
       },
