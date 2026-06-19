@@ -116,6 +116,7 @@ footer { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border)
     <div class="compare-row">
       <span class="label">Actions</span>
       <button class="compare-chip" id="grid-pes" aria-pressed="true" title="Courbe PES en arrière-plan de chaque mini-graphe (axe Y droit en kcal/mol)">PES en arrière-plan</button>
+      <button class="compare-chip" id="grid-separate" aria-pressed="false" title="Pour chaque descripteur per-motif, créer un mini-graphe distinct par cycle actif (sinon : moyenne sur les motifs cochés)">Séparer par cycle</button>
       <button class="compare-chip" id="grid-preset-aroma" title="HOMA, HOMA TOTAL, NICSiso, NICSzz local">Preset aromaticité</button>
       <button class="compare-chip" id="grid-preset-ldm" title="LDM Off Diag, LDM Frob, LDM RMSD, LDM CT %">Preset LDM</button>
       <button class="compare-chip" id="grid-clear">Tout désélectionner</button>
@@ -5053,6 +5054,7 @@ const gridState = {
   motifs:  new Set(['benzene']),
   descriptors: new Set(['HOMA', 'HOMA_TOTAL', 'NICS_zz_l', 'S_G']),
   showPES: true,
+  separateByCycle: false,
 };
 const gridCharts = {};
 
@@ -5086,6 +5088,11 @@ function gridBuildToolbar() {
     e.currentTarget.setAttribute('aria-pressed', gridState.showPES);
     gridRender();
   });
+  document.getElementById('grid-separate').addEventListener('click', (e) => {
+    gridState.separateByCycle = !gridState.separateByCycle;
+    e.currentTarget.setAttribute('aria-pressed', gridState.separateByCycle);
+    gridRender();
+  });
   document.getElementById('grid-preset-aroma').addEventListener('click', () => {
     gridState.descriptors = new Set(['HOMA', 'HOMA_TOTAL', 'NICS_iso', 'NICS_zz_l']);
     document.querySelectorAll('[data-grid-desc]').forEach(b => b.setAttribute('aria-pressed', gridState.descriptors.has(b.dataset.gridDesc)));
@@ -5115,22 +5122,43 @@ function gridRender() {
     return;
   }
 
-  activeKeys.forEach((descKey, idx) => {
+  // Build card specs : each descriptor is one card, OR (when separateByCycle)
+  // each (per-motif descriptor × active motif) becomes its own card.
+  const cardSpecs = [];
+  const activeMotifs = MOTIFS.filter(m => gridState.motifs.has(m));
+  activeKeys.forEach((descKey) => {
     const d = descMeta(descKey);
     if (!d) return;
+    if (gridState.separateByCycle && d.perMotif && activeMotifs.length) {
+      activeMotifs.forEach(m => cardSpecs.push({ descKey, d, splitMotif: m }));
+    } else {
+      cardSpecs.push({ descKey, d, splitMotif: null });
+    }
+  });
+
+  cardSpecs.forEach((spec, idx) => {
+    const { descKey, d, splitMotif } = spec;
     const card = document.createElement('div');
     card.className = 'grid-card';
-    const titleColor = cmpColor(idx);
+    // Title color : motifColor when split, palette color otherwise
+    const titleColor = splitMotif ? c(motifColor[splitMotif]) : cmpColor(idx);
+    const titleLabel = splitMotif ? `${d.label} — ${MOTIF_LABEL[splitMotif]}` : d.label;
+    const familyTag = splitMotif ? `${d.family} · ${MOTIF_LABEL[splitMotif]}`
+                                 : `${d.family}${d.perMotif ? ' · per-motif' : ' · global'}`;
     card.innerHTML = `
       <div class="grid-card-title">
-        <span style="color:${titleColor}">${d.label}</span>
-        <span class="grid-card-family">${d.family}${d.perMotif ? ' · per-motif' : ' · global'}</span>
+        <span style="color:${titleColor}">${titleLabel}</span>
+        <span class="grid-card-family">${familyTag}</span>
       </div>
       <div class="grid-card-canvas-wrap"><canvas id="grid-chart-${idx}"></canvas></div>`;
     root.appendChild(card);
 
+    // Force motifs to a single one when splitting (aggregation in panelValueAt collapses to that motif's raw value)
+    const lookupState = splitMotif
+      ? Object.assign({}, gridState, { motifs: new Set([splitMotif]) })
+      : gridState;
+
     const datasets = [];
-    // PES en arrière-plan (1 courbe par stéréo actif, axe Y droit)
     if (gridState.showPES) {
       gridState.stereos.forEach(stereo => {
         datasets.push({
@@ -5147,10 +5175,10 @@ function gridRender() {
     gridState.stereos.forEach(stereo => {
       const stereoCol = c(stereoColor[stereo]);
       const xs = POINT_ORDER.map(p => DATA[stereo].arox[p].x);
-      const ys = POINT_ORDER.map(p => panelValueAt(gridState, descKey, stereo, p));
+      const ys = POINT_ORDER.map(p => panelValueAt(lookupState, descKey, stereo, p));
       const pts = xs.map((x, i) => ({ x, y: ys[i] }));
       datasets.push({
-        label: `${d.label} (${STEREO_LABEL[stereo]})`,
+        label: `${titleLabel} (${STEREO_LABEL[stereo]})`,
         data: pts,
         borderColor: stereoCol, backgroundColor: stereoCol,
         borderWidth: 2, pointRadius: 3, pointHoverRadius: 5,
@@ -5161,7 +5189,8 @@ function gridRender() {
     });
 
     const ctx = document.getElementById('grid-chart-' + idx).getContext('2d');
-    gridCharts[descKey] = new Chart(ctx, {
+    const chartKey = splitMotif ? `${descKey}__m_${splitMotif}` : descKey;
+    gridCharts[chartKey] = new Chart(ctx, {
       type: 'line',
       data: { datasets },
       options: {
@@ -5208,14 +5237,22 @@ async function gridDownload() {
   const titleH = F_TITLE + F_SUB * 2 + lineGap * 3 + Math.round(10 * DPR);
   const cardGap = Math.round(12 * DPR), cardTitleH = F_CARD_TITLE + Math.round(10 * DPR);
   const cards = [];
+  // Iterate the live gridCharts (preserves cardSpecs order incl. splits)
   let idx = 0;
-  for (const descKey of gridState.descriptors) {
-    const ch = gridCharts[descKey];
+  for (const [chartKey, ch] of Object.entries(gridCharts)) {
     if (!ch) { idx++; continue; }
+    // chartKey format : "<descKey>" or "<descKey>__m_<motif>"
+    const splitMotifMatch = chartKey.match(/^(.+?)__m_(.+)$/);
+    const descKey = splitMotifMatch ? splitMotifMatch[1] : chartKey;
+    const splitMotif = splitMotifMatch ? splitMotifMatch[2] : null;
     const d = descMeta(descKey);
+    if (!d) { idx++; continue; }
+    const label = splitMotif ? `${d.label} — ${MOTIF_LABEL[splitMotif]}` : d.label;
+    const family = splitMotif ? `${d.family} · ${MOTIF_LABEL[splitMotif]}`
+                              : `${d.family}${d.perMotif ? ' · per-motif' : ' · global'}`;
+    const color = splitMotif ? c(motifColor[splitMotif]) : cmpColor(idx);
     const img = await new Promise(r => { const i = new Image(); i.onload = () => r(i); i.src = ch.toBase64Image('image/png', 1); });
-    cards.push({ descKey, label: d.label, family: d.family + (d.perMotif ? ' · per-motif' : ' · global'),
-                 img, color: cmpColor(idx) });
+    cards.push({ chartKey, label, family, img, color });
     idx++;
   }
   if (!cards.length) return;
@@ -5235,7 +5272,7 @@ async function gridDownload() {
   ctx.font = F_SUB + 'px -apple-system, "Segoe UI", Arial, sans-serif';
   ctx.fillStyle = '#6B6B6B';
   ctx.fillText('Method : ' + EXPORT_METHOD, margin, y); y += F_SUB + lineGap;
-  const cfg = `${[...gridState.stereos].sort().join('+')}  ·  ${[...gridState.motifs].length} motifs  ·  ${cards.length} mini-graphes`;
+  const cfg = `${[...gridState.stereos].sort().join('+')}  ·  ${[...gridState.motifs].length} motifs  ·  ${cards.length} mini-graphes${gridState.separateByCycle ? '  ·  séparés par cycle' : ''}${gridState.showPES ? '  ·  PES bg' : ''}`;
   ctx.fillText('Config : ' + cfg, margin, y);
   const baseY = margin + titleH;
   cards.forEach((card, i) => {
