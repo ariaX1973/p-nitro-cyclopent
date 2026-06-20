@@ -14,7 +14,7 @@
 }
 * { box-sizing:border-box; }
 html, body { margin:0; padding:0; background:var(--bg); color:var(--text); }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; font-size:14px; line-height:1.5;
+body { font-family: Helvetica, Arial, sans-serif; font-size:14px; line-height:1.5;
        max-width:1280px; margin:0 auto; padding:1.25rem; }
 .nav { display:flex; gap:0.8rem; align-items:center; font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem; flex-wrap:wrap; }
 .nav a { color:var(--accent); text-decoration:none; }
@@ -4780,7 +4780,7 @@ function drawOne(ctx, hm, TEXT, MUTED, STROKE) {
   const { rows, min, max } = getCells(hm.stereo, state.metric);
   ctx.save();
   ctx.translate(hm.x, hm.y);
-  ctx.font = 'bold 14px -apple-system, Segoe UI, sans-serif';
+  ctx.font = 'bold 14px Helvetica, Arial, sans-serif';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = c(stereoColor[hm.stereo]);
   ctx.beginPath(); ctx.arc(MARGIN_L + 8, TITLE_BAND_H/2 + 5, 6, 0, Math.PI*2); ctx.fill();
@@ -4789,7 +4789,7 @@ function drawOne(ctx, hm, TEXT, MUTED, STROKE) {
   const yBase = MARGIN_T + TITLE_BAND_H;
   rows.forEach((row, r) => {
     ctx.fillStyle = MUTED;
-    ctx.font = '12px -apple-system, Segoe UI, sans-serif';
+    ctx.font = '12px Helvetica, Arial, sans-serif';
     ctx.textBaseline = 'middle'; ctx.textAlign = 'right';
     ctx.fillText(row.label, MARGIN_L - 8, yBase + r*CELL_H + CELL_H/2);
     row.cells.forEach((cell, j) => {
@@ -4802,7 +4802,7 @@ function drawOne(ctx, hm, TEXT, MUTED, STROKE) {
       if (state.showValues && Number.isFinite(cell.raw)) {
         const dark = (mode === 'dark') ? perceivedDark(cell.value, state.metric, min, max) : perceivedLight(cell.value, state.metric, min, max);
         ctx.fillStyle = dark ? '#FFFFFF' : '#1A1A1A';
-        ctx.font = 'bold 11px -apple-system, Segoe UI, sans-serif';
+        ctx.font = 'bold 11px Helvetica, Arial, sans-serif';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         const txt = Math.abs(cell.raw) >= 100 ? cell.raw.toFixed(0)
                   : Math.abs(cell.raw) >= 10  ? cell.raw.toFixed(1)
@@ -4813,16 +4813,16 @@ function drawOne(ctx, hm, TEXT, MUTED, STROKE) {
     });
   });
   ctx.fillStyle = MUTED;
-  ctx.font = '12px -apple-system, Segoe UI, sans-serif';
+  ctx.font = '12px Helvetica, Arial, sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'top';
   POINT_ORDER.forEach((p, j) => {
     const x = MARGIN_L + j*CELL_W + CELL_W/2;
     const y = yBase + rows.length*CELL_H + 6;
-    if (p === 'TS') { ctx.fillStyle = '#D85A30'; ctx.font = 'bold 12px -apple-system, Segoe UI, sans-serif'; }
-    else            { ctx.fillStyle = MUTED;     ctx.font = '12px -apple-system, Segoe UI, sans-serif'; }
+    if (p === 'TS') { ctx.fillStyle = '#D85A30'; ctx.font = 'bold 12px Helvetica, Arial, sans-serif'; }
+    else            { ctx.fillStyle = MUTED;     ctx.font = '12px Helvetica, Arial, sans-serif'; }
     ctx.fillText(POINT_SHORT[p], x, y);
   });
-  ctx.fillStyle = MUTED; ctx.font = '11px -apple-system, Segoe UI, sans-serif';
+  ctx.fillStyle = MUTED; ctx.font = '11px Helvetica, Arial, sans-serif';
   ctx.fillText('Point sur la coordonnée de réaction (R → TS → Produit)',
     MARGIN_L + (CELL_W*POINT_ORDER.length)/2, yBase + rows.length*CELL_H + 28);
   ctx.restore();
@@ -5052,10 +5052,10 @@ async function downloadDiagram() {
   ctx.textBaseline = 'top';
   let y = margin;
   ctx.fillStyle = '#1A1A1A';
-  ctx.font = 'bold ' + F_TITLE + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.font = 'bold ' + F_TITLE + 'px Helvetica, Arial, sans-serif';
   ctx.fillText(EXPORT_TITLE, margin, y);
   y += F_TITLE + lineGap;
-  ctx.font = F_SUB + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.font = F_SUB + 'px Helvetica, Arial, sans-serif';
   ctx.fillStyle = '#6B6B6B';
   ctx.fillText('Method : ' + EXPORT_METHOD, margin, y);
   y += F_SUB + lineGap;
@@ -5063,11 +5063,11 @@ async function downloadDiagram() {
   ctx.drawImage(hmCanvas, margin, margin + titleH);
   const cbY = margin + titleH + hmCanvas.height + Math.round(8 * DPR);
   ctx.fillStyle = '#1A1A1A';
-  ctx.font = 'bold ' + F_SUB + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.font = 'bold ' + F_SUB + 'px Helvetica, Arial, sans-serif';
   ctx.fillText(cbTitle, margin, cbY);
   ctx.drawImage(cbCanvas, margin, cbY + F_SUB + Math.round(4*DPR), hmCanvas.width, Math.round(14*DPR));
   ctx.fillStyle = '#6B6B6B';
-  ctx.font = F_SUB + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.font = F_SUB + 'px Helvetica, Arial, sans-serif';
   ctx.fillText(cbMin, margin, cbY + F_SUB + Math.round(22*DPR));
   ctx.textAlign = 'center';
   ctx.fillText(cbMid, margin + hmCanvas.width/2, cbY + F_SUB + Math.round(22*DPR));

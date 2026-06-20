@@ -5,6 +5,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Panels comparatifs — p-nitrobenzène + cyclopentadiène</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<!-- ACS Style C plugin -->
+<script>
+(function applyAcsStyleC(){
+  if (!window.Chart) return;
+  const F = 'Helvetica, Arial, sans-serif';
+  Chart.defaults.font.family = F;
+  Chart.defaults.color = '#000000';
+  Chart.defaults.elements.line.borderWidth = 1.6;
+  Chart.defaults.elements.point.borderWidth = 1.2;
+  Chart.register({
+    id: 'acsScalePatch',
+    beforeUpdate(chart){
+      for (const sid in chart.scales){
+        const s = chart.scales[sid]; const o = s.options || {};
+        if (s.id === 'yPES') continue;
+        if (!o.grid) o.grid = {};
+        o.grid.color = 'rgba(0,0,0,0)';
+        if (typeof o.grid.tickLength !== 'number' || o.grid.tickLength > -3) o.grid.tickLength = -4;
+        o.grid.drawTicks = true;
+        if (!o.border) o.border = {};
+        o.border.color = '#000000'; o.border.width = 0.8; o.border.dash = [];
+        if (!o.ticks) o.ticks = {};
+        o.ticks.color = '#000000';
+        o.ticks.padding = Math.max(8, o.ticks.padding || 0);
+        if (!o.ticks.font) o.ticks.font = {};
+        o.ticks.font.family = F;
+        if (!o.title) o.title = {};
+        o.title.color = '#000000';
+        if (!o.title.font) o.title.font = {};
+        o.title.font.family = F;
+      }
+    }
+  });
+  Chart.register({
+    id: 'acsFrame',
+    afterDraw(chart){
+      const pl = chart.config.options.plugins || {};
+      if (pl.acsFrame === false) return;
+      const ca = chart.chartArea; if (!ca) return;
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.strokeStyle='#000000'; ctx.lineWidth=0.8;
+      ctx.strokeRect(ca.left + 0.5, ca.top + 0.5, ca.right - ca.left - 1, ca.bottom - ca.top - 1);
+      ctx.restore();
+    }
+  });
+  Chart.register({
+    id: 'acsMinorTicks',
+    afterDraw(chart){
+      const pl = chart.config.options.plugins || {};
+      if (pl.acsMinorTicks === false) return;
+      const ca = chart.chartArea; if (!ca) return;
+      const ctx = chart.ctx;
+      ctx.save();
+      ctx.strokeStyle='#000000'; ctx.lineWidth=0.5;
+      for (const axis of ['x','y']){
+        const s = chart.scales[axis]; if (!s) continue;
+        const ticks = s.ticks; if (!ticks || ticks.length < 2) continue;
+        for (let i=0; i<ticks.length-1; i++){
+          const v0 = ticks[i].value, v1 = ticks[i+1].value;
+          const step = (v1 - v0) / 4;
+          for (let k=1; k<=3; k++){
+            const v = v0 + step*k;
+            const p = s.getPixelForValue(v);
+            if (!Number.isFinite(p)) continue;
+            if (axis === 'x'){
+              ctx.beginPath(); ctx.moveTo(p, ca.bottom); ctx.lineTo(p, ca.bottom - 2.5); ctx.stroke();
+              ctx.beginPath(); ctx.moveTo(p, ca.top);    ctx.lineTo(p, ca.top + 2.5);    ctx.stroke();
+            } else {
+              ctx.beginPath(); ctx.moveTo(ca.left,  p); ctx.lineTo(ca.left + 2.5,  p); ctx.stroke();
+              ctx.beginPath(); ctx.moveTo(ca.right, p); ctx.lineTo(ca.right - 2.5, p); ctx.stroke();
+            }
+          }
+        }
+      }
+      ctx.restore();
+    }
+  });
+})();
+</script>
+
 <style>
 :root {
   --bg:#FAFAF7; --surface:#FFFFFF; --text:#1A1A1A; --muted:#6B6B6B; --border:#E2E0DA;
@@ -15,7 +96,7 @@
 }
 * { box-sizing:border-box; }
 html, body { margin:0; padding:0; background:var(--bg); color:var(--text); }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif; font-size:14px; line-height:1.5;
+body { font-family: Helvetica, Arial, sans-serif; font-size:14px; line-height:1.5;
        max-width:1280px; margin:0 auto; padding:1.25rem; }
 .nav { display:flex; gap:0.8rem; align-items:center; font-size:0.8rem; color:var(--muted); margin-bottom:0.5rem; flex-wrap:wrap; }
 .nav a { color:var(--accent); text-decoration:none; }
@@ -4810,7 +4891,7 @@ function captureHtmlAsImage(el, width, dpr) {
   const height = Math.max(100 * dpr, Math.round(el.scrollHeight * dpr + 24 * dpr));
   const svgStr = '<svg xmlns="http://www.w3.org/2000/svg" width="' + width + '" height="' + height + '">' +
     '<foreignObject x="0" y="0" width="100%" height="100%">' +
-    '<div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff;padding:' + (10*dpr) + 'px ' + (12*dpr) + 'px;box-sizing:border-box;width:' + width + 'px;font-family:-apple-system,Segoe UI,Arial,sans-serif;">' +
+    '<div xmlns="http://www.w3.org/1999/xhtml" style="background:#fff;padding:' + (10*dpr) + 'px ' + (12*dpr) + 'px;box-sizing:border-box;width:' + width + 'px;font-family:Helvetica, Arial, sans-serif;">' +
     '<style>' + pageStyles + '\n' + forceLight + '</style>' + el.outerHTML +
     '</div></foreignObject></svg>';
   const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
@@ -4853,9 +4934,9 @@ async function downloadDiagram() {
   ctx.textBaseline = 'top';
   let y = margin;
   ctx.fillStyle = '#1A1A1A';
-  ctx.font = 'bold ' + F_TITLE + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.font = 'bold ' + F_TITLE + 'px Helvetica, Arial, sans-serif';
   ctx.fillText(EXPORT_TITLE, margin, y); y += F_TITLE + lineGap;
-  ctx.font = F_SUB + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+  ctx.font = F_SUB + 'px Helvetica, Arial, sans-serif';
   ctx.fillStyle = '#6B6B6B';
   ctx.fillText('Method : ' + EXPORT_METHOD, margin, y); y += F_SUB + lineGap;
   const stereos = [...state.stereos].sort().map(s => STEREO_LABEL[s]).join(' + ');
@@ -4865,9 +4946,9 @@ async function downloadDiagram() {
     const cellX = margin + c2 * (cellW + colGap);
     const cellY = margin + titleH + r * (cellH + panelTitleH + rowGap);
     ctx.fillStyle = '#1A1A1A';
-    ctx.font = 'bold ' + F_PANEL + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+    ctx.font = 'bold ' + F_PANEL + 'px Helvetica, Arial, sans-serif';
     ctx.fillText(panel.title, cellX, cellY);
-    ctx.font = (F_PANEL - 1) + 'px -apple-system, "Segoe UI", Arial, sans-serif';
+    ctx.font = (F_PANEL - 1) + 'px Helvetica, Arial, sans-serif';
     ctx.fillStyle = '#6B6B6B';
     ctx.textAlign = 'right';
     ctx.fillText(panel.subtitle, cellX + cellW, cellY);
