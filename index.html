@@ -73,6 +73,26 @@ footer { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--border); 
 .repo-link a { color:var(--accent); text-decoration:none; }
 .repo-link a:hover { text-decoration:underline; }
 </style>
+<!-- ACS credit PNG helper -->
+<script>
+window.ACS_CREDIT = "ARIA NOROOZI — M1 INTERNSHIP 2026 — LABORATOIRE DE CHIMIE THÉORIQUE (LCT)";
+window.withAcsCredit = function(canvas) {
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  const pad = Math.round(8 * dpr);
+  const cH = Math.round(14 * dpr) + pad * 2;
+  const out = document.createElement('canvas');
+  out.width = canvas.width; out.height = canvas.height + cH;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(canvas, 0, 0);
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = '#6B6B6B';
+  ctx.font = Math.round(12 * dpr) + 'px Helvetica, Arial, sans-serif';
+  const tw = ctx.measureText(window.ACS_CREDIT).width;
+  ctx.fillText(window.ACS_CREDIT, (out.width - tw) / 2, canvas.height + pad);
+  return out;
+};
+</script>
 </head>
 <body>
 
@@ -230,5 +250,7 @@ footer { margin-top:2rem; padding-top:1rem; border-top:1px solid var(--border); 
   </p>
 </footer>
 
+<!-- ACS credit line -->
+<p style="text-align:center;font-size:0.75rem;letter-spacing:0.05em;color:var(--muted);padding:12px 0 4px;border-top:1px solid var(--border);margin-top:16px;font-family:Helvetica,Arial,sans-serif">ARIA NOROOZI — M1 INTERNSHIP 2026 — LABORATOIRE DE CHIMIE THÉORIQUE (LCT)</p>
 </body>
 </html>

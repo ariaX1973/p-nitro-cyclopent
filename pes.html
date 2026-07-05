@@ -161,6 +161,26 @@ footer { margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--border)
 .methods-note { font-size:0.78rem; color:var(--muted); margin:0; }
 .methods-note strong { color:var(--text); }
 </style>
+<!-- ACS credit PNG helper -->
+<script>
+window.ACS_CREDIT = "ARIA NOROOZI — M1 INTERNSHIP 2026 — LABORATOIRE DE CHIMIE THÉORIQUE (LCT)";
+window.withAcsCredit = function(canvas) {
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+  const pad = Math.round(8 * dpr);
+  const cH = Math.round(14 * dpr) + pad * 2;
+  const out = document.createElement('canvas');
+  out.width = canvas.width; out.height = canvas.height + cH;
+  const ctx = out.getContext('2d');
+  ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, out.width, out.height);
+  ctx.drawImage(canvas, 0, 0);
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = '#6B6B6B';
+  ctx.font = Math.round(12 * dpr) + 'px Helvetica, Arial, sans-serif';
+  const tw = ctx.measureText(window.ACS_CREDIT).width;
+  ctx.fillText(window.ACS_CREDIT, (out.width - tw) / 2, canvas.height + pad);
+  return out;
+};
+</script>
 </head>
 <body>
 
@@ -5355,12 +5375,14 @@ async function downloadDiagram() {
   const stereoTag = [...state.stereos].sort().join('-');
   const link = document.createElement('a');
   link.download = `${EXPORT_SLUG}_${stereoTag}_${state.baseline}_${new Date().toISOString().slice(0,10)}.png`;
-  link.href = out.toDataURL('image/png');
+  link.href = withAcsCredit(out).toDataURL('image/png');
   link.click();
 }
 document.getElementById('btn-download').addEventListener('click', downloadDiagram);
 
 })();
 </script>
+<!-- ACS credit line -->
+<p style="text-align:center;font-size:0.75rem;letter-spacing:0.05em;color:var(--muted);padding:12px 0 4px;border-top:1px solid var(--border);margin-top:16px;font-family:Helvetica,Arial,sans-serif">ARIA NOROOZI — M1 INTERNSHIP 2026 — LABORATOIRE DE CHIMIE THÉORIQUE (LCT)</p>
 </body>
 </html>
