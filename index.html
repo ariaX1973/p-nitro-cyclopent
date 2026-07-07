@@ -103,8 +103,9 @@ window.withAcsCredit = function(canvas) {
     (diénophile activé par −NO₂), au niveau <code>wB97XD/def2-SVP</code> (Gaussian 16).
     Trajectoires IRC complètes pour les deux stéréochimies <strong>endo</strong> et <strong>exo</strong>, avec
     descripteurs d'aromaticité (HOMA, LDM, Q, S-hom) sur 6 motifs cycliques + <strong>NICS</strong> (ωB97X-D/def2SVP, Bq à 1.7 Å)
+    + <strong>Entropie Shannon</strong> (AroX v0.3.5 : H_LDM, H_loc, H_del, u_raw % par cycle + H(G), H_Q(G), H_S(G) globaux)
     pour Cyclopent et NitroBenzène aux 9 points clés du chemin (R → P1–P3 → TS → P4–P6 → Produit).
-    Vérifications xlsx ↔ JSON ↔ HTML : 1620 cellules × 0 mismatch.
+    Vérifications xlsx ↔ JSON ↔ HTML : 2070 cellules × 0 mismatch.
   </p>
 </header>
 
@@ -155,7 +156,7 @@ window.withAcsCredit = function(canvas) {
 
   <a class="card-link" href="descriptors.html">
     <h3>Descripteurs vs point IRC <span class="arrow">→</span></h3>
-    <span class="tag">18 descripteurs</span><span class="tag">Multi-select</span><span class="tag">Normaliser</span>
+    <span class="tag">25 descripteurs</span><span class="tag">Multi-select</span><span class="tag">Normaliser</span><span class="tag">+ Entropy</span>
     <p class="desc">Multi-sélection : superposer plusieurs descripteurs (couleur = descripteur, forme = cycle), 6 cycles différenciés par forme de marqueur + style de trait.
     Toggle <em>Normaliser</em> [0, 1] pour comparer les <strong>formes</strong> quand les plages diffèrent fortement.</p>
   </a>
